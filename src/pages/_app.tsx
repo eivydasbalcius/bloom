@@ -9,7 +9,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ApolloProvider client={apolloClient}>
       <Header/>
+      <div className="bg-white">
       <Component {...pageProps} />
+      </div>
       <Footer/>
     </ApolloProvider>
   );
