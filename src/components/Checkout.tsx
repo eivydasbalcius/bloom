@@ -23,8 +23,6 @@ const products = [
 export default function Checkout() {
   return (
     <>
-     return (
-    <div className="bg-white">
       {/* Background color split screen for large screens */}
       <div className="fixed left-0 top-0 hidden h-full w-1/2 bg-white lg:block" aria-hidden="true" />
       <div className="fixed right-0 top-0 hidden h-full w-1/2 bg-indigo-900 lg:block" aria-hidden="true" />
@@ -272,7 +270,7 @@ export default function Checkout() {
           </form>
         </section>
       </div>
-      </div>
+
     </>
   );
 }
