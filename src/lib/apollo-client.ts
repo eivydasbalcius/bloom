@@ -5,7 +5,7 @@ const httpLink = new HttpLink({
 });
 
 // Initialize Apollo Client with a cache and a link that points to your GraphQL server.
-const apolloClient = new ApolloClient<NormalizedCacheObject>({
+const apolloClient = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache(),
 });

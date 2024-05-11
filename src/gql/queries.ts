@@ -1,14 +1,19 @@
 import { gql } from '@apollo/client';
+// import { graphql } from './generated/gql'
 
 export const CATEGORIES_QUERY = gql`
 query Categories {
   productCategories(
-    where: {hideEmpty: true, parent: null, exclude: "dGVybToxNQ=="}
+    where: {hideEmpty: false, parent: null, exclude: "dGVybToxNQ=="}
   ) {
     nodes {
       id
       name
       slug
+      description
+      image {
+        mediaItemUrl
+      }
       children {
         nodes {
           id
@@ -19,4 +24,82 @@ query Categories {
     }
   }
 }
+
 `;
+
+export const PRODUCTS_WITH_CATEGORIES_QUERY = gql`
+query GetProductsWithCategory {
+  products(first: 30) {
+    nodes {
+      ... on SimpleProduct {
+        id
+        name
+        description(format: RAW)
+        price(format: RAW)
+        slug
+        image {
+          slug
+          mediaItemUrl
+        }
+        productTags {
+          nodes {
+            name
+            slug
+          }
+        }
+      productCategories {
+          nodes {
+            id
+            name
+            slug
+            parentId
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+export const GET_PRODUCT_BY_SLUG = gql`
+query GetProductBySlug($slug: ID!) {
+  product(id: $slug, idType: SLUG) {
+    ... on SimpleProduct {
+      id
+      name
+      description(format: RAW)
+      price(format: RAW)
+      slug
+      image {
+        slug
+        mediaItemUrl
+      }
+      productTags {
+        nodes {
+          name
+          slug
+        }
+      }
+      productCategories {
+        nodes {
+          id
+          name
+          slug
+          parentId
+        }
+      }
+      attributes {
+        nodes {
+          id
+          attributeId
+          name
+          label
+          options
+        }
+      }
+    }
+  }
+}
+`;
+
+
