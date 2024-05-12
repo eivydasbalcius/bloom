@@ -28,7 +28,7 @@ query Categories {
 `;
 
 export const PRODUCTS_WITH_CATEGORIES_QUERY = gql`
-query GetProductsWithCategory {
+query GetProductsWithCategoryAndTags {
   products(first: 30) {
     nodes {
       ... on SimpleProduct {
@@ -47,7 +47,7 @@ query GetProductsWithCategory {
             slug
           }
         }
-      productCategories {
+        productCategories {
           nodes {
             id
             name
@@ -55,10 +55,37 @@ query GetProductsWithCategory {
             parentId
           }
         }
+        attributes {
+          nodes {
+            ... on GlobalProductAttribute {
+              id
+              name
+              label
+              options
+              terms {
+                nodes {
+                  ... on PaColor {
+                    id
+                    name
+                    count
+                    slug
+                  }
+                  ... on PaSize {
+                    id
+                    name
+                    count
+                    slug
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
 }
+
 `;
 
 export const GET_PRODUCT_BY_SLUG = gql`
@@ -97,9 +124,33 @@ query GetProductBySlug($slug: ID!) {
           options
         }
       }
+      attributes {
+        nodes {
+          ... on GlobalProductAttribute {
+            id
+            name
+            label
+            options
+            terms {
+              nodes {
+                ... on PaColor {
+                  id
+                  name
+                  count
+                  slug
+                }
+                ... on PaSize {
+                  id
+                  name
+                  count
+                  slug
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
 `;
-
-
