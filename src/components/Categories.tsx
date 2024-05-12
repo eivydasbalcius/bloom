@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import { Dialog, Disclosure, Menu, Popover, Tab, Transition } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingCartIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
@@ -15,92 +15,132 @@ const breadcrumbs = [
     { name: 'Price: Low to High', href: '#', current: false },
     { name: 'Price: High to Low', href: '#', current: false },
   ]
-  const filters = [
-    {
-      id: 'category',
-      name: 'Category',
-      options: [
-        { value: 'new-arrivals', label: 'All New Arrivals', checked: false },
-        { value: 'tees', label: 'Tees', checked: false },
-        { value: 'objects', label: 'Objects', checked: true },
-        { value: 'sweatshirts', label: 'Sweatshirts', checked: false },
-        { value: 'pants-shorts', label: 'Pants & Shorts', checked: false },
-      ],
-    },
-    {
-      id: 'color',
-      name: 'Color',
-      options: [
-        { value: 'white', label: 'White', checked: false },
-        { value: 'beige', label: 'Beige', checked: false },
-        { value: 'blue', label: 'Blue', checked: false },
-        { value: 'brown', label: 'Brown', checked: false },
-        { value: 'green', label: 'Green', checked: false },
-        { value: 'purple', label: 'Purple', checked: false },
-      ],
-    },
-    {
-      id: 'sizes',
-      name: 'Sizes',
-      options: [
-        { value: 'xs', label: 'XS', checked: false },
-        { value: 's', label: 'S', checked: false },
-        { value: 'm', label: 'M', checked: false },
-        { value: 'l', label: 'L', checked: false },
-        { value: 'xl', label: 'XL', checked: false },
-        { value: '2xl', label: '2XL', checked: false },
-      ],
-    },
-  ]
-  const activeFilters = [{ value: 'objects', label: 'Objects' }]
-  const products = [
-    {
-      id: 1,
-      name: 'Earthen Bottle',
-      href: '#',
-      price: '$48',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-01.jpg',
-      imageAlt: 'Tall slender porcelain bottle with natural clay textured body and cork stopper.',
-    },
-    {
-      id: 2,
-      name: 'Nomad Tumbler',
-      href: '#',
-      price: '$35',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-02.jpg',
-      imageAlt: 'Olive drab green insulated bottle with flared screw lid and flat top.',
-    },
-    {
-      id: 3,
-      name: 'Focus Paper Refill',
-      href: '#',
-      price: '$89',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg',
-      imageAlt: 'Person using a pen to cross a task off a productivity paper card.',
-    },
-    {
-      id: 4,
-      name: 'Machined Mechanical Pencil',
-      href: '#',
-      price: '$35',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-04.jpg',
-      imageAlt: 'Hand holding black machined steel mechanical pencil with brass tip and top.',
-    },
-    // More products...
-  ]
 
-export default function ProductOverview() {
+  interface Product {
+    id: string;
+    name: string;
+    price: string;
+    slug: string;
+    image: {
+      mediaItemUrl: string;
+    };
+    productCategories: {
+      nodes: Array<{ id: string; name: string; slug: string; parentId: string }>;
+    };
+    attributes: {
+      nodes: Array<{
+        id: string;
+        name: string;
+        label: string;
+        options: string[];
+        terms: {
+          nodes: Array<{
+            id: string;
+            name: string;
+            count: number;
+            slug: string;
+          }>;
+        };
+      }>;
+    };
+  }
+  
+  interface FilterOptions {
+    categories: string[];
+    colors: string[];
+    sizes: string[];
+  }
+  
+  interface ActiveFilters {
+    categories: string[];
+    colors: string[];
+    sizes: string[];
+  }
+  
+  interface AllProductsPageProps {
+    products: Product[];
+  }
+
+  
+  const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+    const [filters, setFilters] = useState<FilterOptions>({ categories: [], colors: [], sizes: [] });
+    const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
+      categories: [],
+      colors: [],
+      sizes: []
+    });
+    const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
 
 
+    
+    useEffect(() => {
+      const categorySet = new Set<string>();
+      const colorSet = new Set<string>();
+      const sizeSet = new Set<string>();
+  
+      products?.forEach(product => {
+        product?.productCategories?.nodes?.forEach(category => categorySet.add(category.name));
+        product?.attributes?.nodes?.forEach(attribute => {
+          attribute.terms?.nodes?.forEach(term => {
+            if (attribute.name === 'pa_color') {
+              colorSet.add(term.name);
+            } else if (attribute.name === 'pa_size') {
+              sizeSet.add(term.name);
+            }
+          });
+        });
+      });
+  
+      setFilters({
+        categories: Array.from(categorySet),
+        colors: Array.from(colorSet),
+        sizes: Array.from(sizeSet)
+      });
+    }, [products]);
+  
+    function handleFilterChange(filterType: keyof FilterOptions, value: string) {
+      setActiveFilters(prev => {
+        const currentFilterValues = prev[filterType] || []; // Ensure it defaults to an array
+        const isValuePresent = currentFilterValues.includes(value);
+        const updatedFilters = isValuePresent
+          ? currentFilterValues.filter(v => v !== value) // Remove the filter
+          : [...currentFilterValues, value]; // Add the filter
+    
+        return {
+          
+          ...prev,
+          [filterType]: updatedFilters
+        };
+      });
+    }
+  
+    useEffect(() => {
+      const filtered = products.filter(product => {
+        const categoryMatch = !activeFilters?.categories?.length || product?.productCategories?.nodes?.some(cat => activeFilters.categories.includes(cat.name));
+        const colorMatch = !activeFilters?.colors?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_color' && attr.terms.nodes.some(term => activeFilters.colors.includes(term.name)));
+        const sizeMatch = !activeFilters?.sizes?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_size' && attr.terms.nodes.some(term => activeFilters.sizes.includes(term.name)));
+        return categoryMatch && colorMatch && sizeMatch;
+      });
+
+      setDisplayedProducts(filtered);
+    }, [products, activeFilters]);
+
+    const filterSections = [
+      { id: 'categories', name: 'Category', options: filters?.categories?.map(cat => ({ value: cat, label: cat, checked: activeFilters.categories.includes(cat) })) },
+      { id: 'colors', name: 'Color', options: filters?.colors?.map(color => ({ value: color, label: color, checked: activeFilters.colors.includes(color) })) },
+      { id: 'sizes', name: 'Size', options: filters?.sizes?.map(size => ({ value: size, label: size, checked: activeFilters.sizes.includes(size) })) },
+    ];
+
+    
     function classNames(...classes: string[]) {
         return classes.filter(Boolean).join(' ');
       }
 
   return (
     <>
-  <main>
+        <div>
           <div className="bg-white">
             <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
               <h1 className="text-3xl font-bold tracking-tight text-gray-900">Workspace sale</h1>
@@ -119,7 +159,7 @@ export default function ProductOverview() {
 
             <div className="border-b border-gray-200 bg-white pb-4">
               <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-                <Menu as="div" className="relative inline-block text-left">
+                {/* <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                       Sort
@@ -160,7 +200,7 @@ export default function ProductOverview() {
                       </div>
                     </Menu.Items>
                   </Transition>
-                </Menu>
+                </Menu> */}
 
                 <button
                   type="button"
@@ -173,21 +213,15 @@ export default function ProductOverview() {
                 <div className="hidden sm:block">
                   <div className="flow-root">
                     <Popover.Group className="-mx-4 flex items-center divide-x divide-gray-200">
-                      {filters.map((section, sectionIdx) => (
-                        <Popover key={section.name} className="relative inline-block px-4 text-left">
+                      {filterSections?.map((section) => (
+                        <Popover key={section.id} className="relative inline-block px-4 text-left">
                           <Popover.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                             <span>{section.name}</span>
-                            {sectionIdx === 0 ? (
-                              <span className="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">
-                                1
-                              </span>
-                            ) : null}
                             <ChevronDownIcon
                               className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                               aria-hidden="true"
                             />
                           </Popover.Button>
-
                           <Transition
                             as={Fragment}
                             enter="transition ease-out duration-100"
@@ -199,18 +233,19 @@ export default function ProductOverview() {
                           >
                             <Popover.Panel className="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                               <form className="space-y-4">
-                                {section.options.map((option, optionIdx) => (
-                                  <div key={option.value} className="flex items-center">
+                                {section?.options?.map((option, index) => (
+                                  <div key={index} className="flex items-center">
                                     <input
-                                      id={`filter-${section.id}-${optionIdx}`}
+                                      id={`filter-${section.id}-${index}`}
                                       name={`${section.id}[]`}
-                                      defaultValue={option.value}
+                                      value={option.value}
                                       type="checkbox"
-                                      defaultChecked={option.checked}
+                                      checked={option.checked}
+                                      onChange={() => handleFilterChange(section.id as keyof FilterOptions, option.value)}
                                       className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                     />
                                     <label
-                                      htmlFor={`filter-${section.id}-${optionIdx}`}
+                                      htmlFor={`filter-${section.id}-${index}`}
                                       className="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
                                     >
                                       {option.label}
@@ -236,28 +271,27 @@ export default function ProductOverview() {
                   <span className="sr-only">, active</span>
                 </h3>
 
-                <div aria-hidden="true" className="hidden h-5 w-px bg-gray-300 sm:ml-4 sm:block" />
-
                 <div className="mt-2 sm:ml-4 sm:mt-0">
-                  <div className="-m-1 flex flex-wrap items-center">
-                    {activeFilters.map((activeFilter) => (
+                  {Object.entries(activeFilters).map(([key, values]) => (
+                    values.map(value => (
                       <span
-                        key={activeFilter.value}
+                        key={key + value}
                         className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
                       >
-                        <span>{activeFilter.label}</span>
+                        {value}
                         <button
                           type="button"
                           className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
+                          onClick={() => handleFilterChange(key as keyof FilterOptions, value)}
                         >
-                          <span className="sr-only">Remove filter for {activeFilter.label}</span>
+                          <span className="sr-only">Remove filter for {value}</span>
                           <svg className="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
                             <path strokeLinecap="round" strokeWidth="1.5" d="M1 1l6 6m0-6L1 7" />
                           </svg>
                         </button>
                       </span>
-                    ))}
-                  </div>
+                    ))
+                  ))}
                 </div>
               </div>
             </div>
@@ -268,28 +302,27 @@ export default function ProductOverview() {
             aria-labelledby="products-heading"
             className="mx-auto max-w-2xl px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-16 lg:max-w-7xl lg:px-8"
           >
-            <h2 id="products-heading" className="sr-only">
-              Products
-            </h2>
-
+            <h2 id="products-heading" className="sr-only">Products</h2>
             <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-              {products.map((product) => (
-                <a key={product.id} href={product.href} className="group">
-                  <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+              {displayedProducts.map((product) => (
+                <a key={product.id} href={`/products/${product.slug}`} className="group">
+                  <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
                     <img
-                      src={product.imageSrc}
-                      alt={product.imageAlt}
+                      src={product.image.mediaItemUrl}
+                      alt={product.name}
                       className="h-full w-full object-cover object-center group-hover:opacity-75"
                     />
                   </div>
                   <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
-                  <p className="mt-1 text-lg font-medium text-gray-900">{product.price}</p>
+                  <p className="mt-1 text-lg font-medium text-gray-900">{product.price} €</p>
                 </a>
               ))}
             </div>
           </section>
-        </main>
+        </div>
 
     </>
   );
 }
+
+export default AllProductsPage;
