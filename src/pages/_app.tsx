@@ -6,16 +6,35 @@ import '../../styles/main.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { ProductDataProvider } from '@/context/ProductDataContext';
+import { SessionProvider } from 'next-auth/react';
+import { ReactElement, ReactNode } from 'react';
+import { NextPage } from 'next';
 
-function MyApp({ Component, pageProps }: AppProps) {
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout ?? ((page) => (
+    <>
+      <Header />
+      <div className="bg-white">
+        {page}
+      </div>
+      <Footer />
+    </>
+  ));
+
   return (
     <ApolloProvider client={apolloClient}>
       <ProductDataProvider>
-        <Header />
-        <div className="bg-white">
-          <Component {...pageProps} />
-        </div>
-        <Footer />
+      <SessionProvider session={pageProps.session}>
+          {getLayout(<Component {...pageProps} />)}
+        </SessionProvider>
       </ProductDataProvider>
     </ApolloProvider>
   );
