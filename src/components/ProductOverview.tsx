@@ -3,14 +3,91 @@ import React, { useState, useEffect } from 'react';
 import { RadioGroup } from '@headlessui/react'
 import { StarIcon } from '@heroicons/react/20/solid'
 
-export default function ProductOverview ({ product }) {
+type Product = {
+  __typename: string;
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  slug: string;
+  image: {
+    __typename: string;
+    slug: string;
+    mediaItemUrl: string;
+  };
+  productTags: {
+    __typename: string;
+    nodes: {
+      __typename: string;
+      name: string;
+      slug: string;
+    }[];
+  };
+  productCategories: {
+    __typename: string;
+    nodes: {
+      __typename: string;
+      id: string;
+      name: string;
+      slug: string;
+      parentId: string;
+    }[];
+  };
+  attributes: {
+    __typename: string;
+    nodes: {
+      __typename: string;
+      id: string;
+      name: string;
+      label: string;
+      options: string[];
+      terms: {
+        __typename: string;
+        nodes: {
+          __typename: string;
+          id: string;
+          name: string;
+          count: number;
+          slug: string;
+        }[];
+      };
+    }[];
+  } | null;
+};
+
+type ProductOverviewProps = {
+  product: Product[];
+};
+
+
+const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
   const [open, setOpen] = useState(false)
-  const [selectedColor, setSelectedColor] = useState(product?.attributes?.nodes?.find(attr => attr.name === 'pa_color').options[0]);
-  const [selectedSize, setSelectedSize] = useState(product?.attributes?.nodes?.find(attr => attr.name === 'pa_size').options[0]);
+
+  const getColorOptions = () => {
+    const colorAttribute = product?.attributes?.nodes?.find(attr => attr.name === 'pa_color');
+    return colorAttribute ? colorAttribute.options[0] : null;
+  };
+
+  const getSizeOptions = () => {
+    const sizeAttribute = product?.attributes?.nodes?.find(attr => attr.name === 'pa_size');
+    return sizeAttribute ? sizeAttribute.terms.nodes : [];
+  };
+
+  const [selectedColor, setSelectedColor] = useState(getColorOptions);
+  const [selectedSize, setSelectedSize] = useState(getSizeOptions);
 
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
   }
+
+  useEffect(() => {
+    setSelectedColor(getColorOptions());
+    setSelectedSize(getSizeOptions());
+  }, [product]);
+
+  useEffect(() => {
+    console.log('Trending Products:', product);
+  }, [product]);
 
   return (
     <>
@@ -96,8 +173,8 @@ export default function ProductOverview ({ product }) {
                     <StarIcon
                       key={rating}
                       className={classNames(
-                       'text-gray-900' ,
-                       'text-gray-200',
+                        'text-gray-900',
+                        'text-gray-200',
                         'h-5 w-5 flex-shrink-0'
                       )}
                       aria-hidden="true"
@@ -111,75 +188,75 @@ export default function ProductOverview ({ product }) {
               </div>
             </div>
 
-        <form className="mt-10">
-          {/* Colors */}
-          {product?.attributes?.nodes?.find(attr => attr.name === 'pa_color').options.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium text-gray-900">Color</h3>
-            <RadioGroup value={selectedColor} onChange={setSelectedColor} className="mt-4">
-              <RadioGroup.Label className="sr-only">Choose a color</RadioGroup.Label>
-              <div className="flex items-center space-x-3">
-                {product?.attributes?.nodes?.find(attr => attr.name === 'pa_color').options.map((color) => (
-                  <RadioGroup.Option
-                    key={color}
-                    value={color}
-                    className={({ active, checked }) =>
-                      classNames(
-                        'relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none',
-                        checked ? 'ring-2 ring-offset-1 ring-indigo-500' : '',
-                      )
-                    }
-                  >
-                    <RadioGroup.Label as="span" className="sr-only">
-                      {color}
-                    </RadioGroup.Label>
-                    <span
-                      aria-hidden="true"
-                      className="h-8 w-8 rounded-full"
-                      style={{ backgroundColor: color }}
-                    />
-                  </RadioGroup.Option>
-                ))}
-              </div>
-            </RadioGroup>
-          </div>
-)}
-          {/* Sizes */}
-          {product?.attributes?.nodes?.find(attr => attr.name === 'pa_size').options.length > 0 && (
-          <div className="mt-10">
-            <h3 className="text-sm font-medium text-gray-900">Size</h3>
-            <RadioGroup value={selectedSize} onChange={setSelectedSize} className="mt-4">
-              <RadioGroup.Label className="sr-only">Choose a size</RadioGroup.Label>
-              <div className="grid grid-cols-4 gap-4">
-                {product?.attributes?.nodes?.find(attr => attr.name === 'pa_size').options.map((size) => (
-                  <RadioGroup.Option
-                    key={size}
-                    value={size}
-                    className={({ active, checked }) =>
-                      classNames(
-                        'cursor-pointer rounded-md p-3 text-sm font-medium focus:outline-none',
-                        checked ? 'bg-indigo-600 text-white' : 'bg-white shadow-sm text-gray-900',
-                        active ? 'ring-2 ring-indigo-500' : '',
-                      )
-                    }
-                  >
-                    <RadioGroup.Label as="span">
-                      {size}
-                    </RadioGroup.Label>
-                  </RadioGroup.Option>
-                ))}
-              </div>
-            </RadioGroup>
-          </div>
-          )}
+            <form className="mt-10">
+              {/* Colors */}
+              {selectedColor && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900">Color</h3>
+                  <RadioGroup value={selectedColor} onChange={setSelectedColor} className="mt-4">
+                    <RadioGroup.Label className="sr-only">Choose a color</RadioGroup.Label>
+                    <div className="flex items-center space-x-3">
+                      {product?.attributes?.nodes?.find(attr => attr.name === 'pa_color').options.map((color) => (
+                        <RadioGroup.Option
+                          key={color}
+                          value={color}
+                          className={({ active, checked }) =>
+                            classNames(
+                              'relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none',
+                              checked ? 'ring-2 ring-offset-1 ring-indigo-500' : '',
+                            )
+                          }
+                        >
+                          <RadioGroup.Label as="span" className="sr-only">
+                            {color}
+                          </RadioGroup.Label>
+                          <span
+                            aria-hidden="true"
+                            className="h-8 w-8 rounded-full"
+                            style={{ backgroundColor: color }}
+                          />
+                        </RadioGroup.Option>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </div>
+              )}
+              {/* Sizes */}
+              {selectedSize && (
+                <div className="mt-10">
+                  <h3 className="text-sm font-medium text-gray-900">Size</h3>
+                  <RadioGroup value={selectedSize} onChange={setSelectedSize} className="mt-4">
+                    <RadioGroup.Label className="sr-only">Choose a size</RadioGroup.Label>
+                    <div className="grid grid-cols-4 gap-4">
+                      {product?.attributes?.nodes?.find(attr => attr.name === 'pa_size')?.terms?.nodes?.map((size) => (
+                        <RadioGroup.Option
+                          key={size.id}
+                          value={size.name}
+                          className={({ active, checked }) =>
+                            classNames(
+                              'cursor-pointer rounded-md p-3 text-sm font-medium focus:outline-none',
+                              checked ? 'bg-indigo-600 text-white' : 'bg-white shadow-sm text-gray-900',
+                              active ? 'ring-2 ring-indigo-500' : '',
+                            )
+                          }
+                        >
+                          <RadioGroup.Label as="span">
+                            {size.name}
+                          </RadioGroup.Label>
+                        </RadioGroup.Option>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </div>
+              )}
 
-          <button
-            type="submit"
-            className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Add to bag
-          </button>
-        </form>
+              <button
+                type="submit"
+                className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                Add to bag
+              </button>
+            </form>
           </div>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
@@ -226,3 +303,4 @@ export default function ProductOverview ({ product }) {
     </>
   );
 }
+export default ProductOverview;
