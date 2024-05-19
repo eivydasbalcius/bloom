@@ -1,43 +1,23 @@
-
 import React, { useEffect } from 'react';
 import { useProductData } from '@/context/ProductDataContext';
-const collections = [
-    {
-      name: 'Desk and Office',
-      description: 'Work from home accessories',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-02-edition-01.jpg',
-      imageAlt: 'Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug.',
-      href: '#',
-    },
-    {
-      name: 'Self-Improvement',
-      description: 'Journals and note-taking',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-02-edition-02.jpg',
-      imageAlt: 'Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant.',
-      href: '#',
-    },
-    {
-      name: 'Travel',
-      description: 'Daily commute essentials',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-02-edition-03.jpg',
-      imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
-      href: '#',
-    },
-  ]
-
 
 const Collections = () => {
   const { categories } = useProductData();
 
-  const collectionCategories = categories.filter(category => 
-    category.slug.startsWith('collection-')
-  );
+  // Find the Collections category
+  const collectionsCategory = categories.find(category => category.slug === 'collections');
+
+  // Filter the subcategories with slugs starting with 'collection-'
+  const collectionCategories = collectionsCategory?.children?.nodes.filter(subCategory =>
+    subCategory.slug.startsWith('collection-')
+  ) || [];
 
   useEffect(() => {
-    console.log('Filtered Collection Categories:', collectionCategories);
-  }, [collectionCategories]); 
-    return (
-      <section aria-labelledby="collections-heading" className="bg-gray-100">
+    console.log('Filtered Collection Categories:', categories);
+  }, [categories]);
+
+  return (
+    <section aria-labelledby="collections-heading" className="bg-gray-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32">
           <h2 id="collections-heading" className="text-2xl font-bold text-gray-900">
@@ -48,7 +28,7 @@ const Collections = () => {
               <div key={category.id} className="group relative">
                 <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
                   <img
-                    src={category.image?.mediaItemUrl} // Fallback URL in case there's no image
+                    src={category.image?.mediaItemUrl || 'https://tailwindui.com/img/ecommerce-images/home-page-02-edition-01.jpg'} // Fallback URL
                     alt={category.name}
                     className="h-full w-full object-cover object-center"
                   />
@@ -66,7 +46,7 @@ const Collections = () => {
         </div>
       </div>
     </section>
-);
+  );
 };
 
 export default Collections;
