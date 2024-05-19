@@ -23,7 +23,7 @@ const Checkout = () => {
   }
 
   useEffect(() => {
-    const cartData = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const cartData = JSON.parse(sessionStorage.getItem('cart') ?? '') || [];
     setCart(cartData);
 
     const subTotal = cartData.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -32,7 +32,7 @@ const Checkout = () => {
 
 
     setSubtotal(subTotal.toFixed(2));
-    setTaxes(tax.toFixed(2));
+    setTaxes(Number(tax.toFixed(2))); // Convert the string value to a number
     setTotal(totalAmount.toFixed(2));
   }, []);
 
