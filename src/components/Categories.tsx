@@ -224,7 +224,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
 
               <div className="mt-2 sm:ml-4 sm:mt-0">
                 {Object.entries(activeFilters).map(([key, values]) => (
-                  values?.map((value) => (
+                  (values as string[]).map((value) => (
                     <span
                       key={key + value}
                       className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
