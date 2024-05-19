@@ -1,10 +1,9 @@
 import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject } from '@apollo/client';
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:10048/graphql', // Replace this with your actual GraphQL endpoint
+  uri: "https://blueviolet-antelope-713639.hostingersite.com/graphql",
 });
 
-// Initialize Apollo Client with a cache and a link that points to your GraphQL server.
 const apolloClient = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache(),

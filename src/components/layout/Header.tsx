@@ -8,6 +8,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import Image from 'next/image';
 import { useProductData } from '@/context/ProductDataContext';
 import { useRouter } from 'next/router';
+import logo from "../../../public/bloom.jpeg";
 
 const currencies = ['EUR', 'CAD', 'USD', 'AUD', 'GBP']
 const navigation = {
@@ -52,6 +53,11 @@ const Header = (props: HeaderProps) => {
       window.removeEventListener('cart-updated', handleCartUpdate);
     };
   }, []);
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push('/');
+  }
 
   const handleCheckoutClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -303,11 +309,11 @@ const Header = (props: HeaderProps) => {
                 <div className="flex h-16 items-center justify-between">
                   {/* Logo (lg+) */}
                   <div className="hidden lg:flex lg:items-center">
-                    <a href="/">
+                    <a onClick={handleLogoClick}>
                       <span className="sr-only">Your Company</span>
                       <Image
                         className="h-8 w-auto"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                        src={logo}
                         alt=""
                         width={100}
                         height={100}
@@ -402,7 +408,7 @@ const Header = (props: HeaderProps) => {
                   <a href="#" className="lg:hidden">
                     <span className="sr-only">Your Company</span>
                     <img
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                      src={logo}
                       alt=""
                       className="h-8 w-auto"
                     />

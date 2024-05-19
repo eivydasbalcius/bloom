@@ -3,6 +3,8 @@ import { GetServerSideProps } from "next";
 import { getProviders, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import AuthLayout from "./layout";
+import logo from "../../../public/bloom.jpeg";
+import Image from 'next/image';
 
 type SignInProps = {
   providers: Record<string, any>;
@@ -15,18 +17,14 @@ export default function SignIn({ providers }: SignInProps) {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
-          className="mx-auto h-10 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-          alt="Your Company"
-        />
+
         <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your account to continue
         </h2>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-        <div className="bg-white px-6 pb-12 shadow sm:rounded-lg sm:px-12">
+        <div className="bg-white px-6 py-8 shadow sm:rounded-lg sm:px-12">
           {/* <form className="space-y-6" action="#" method="POST">
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
@@ -100,8 +98,15 @@ export default function SignIn({ providers }: SignInProps) {
               </div>
             </div> */}
 
+            <Image
+              className="mx-auto h-10 w-auto"
+              src={logo}
+              alt="Your Company"
+              width={100}
+              height={100}
+            />
             <span className="mt-6 text-center text-2xl font-medium leading-9 tracking-tight text-gray-900">Use secure Sign in</span>
-            <div className="mt-6 grid grid-cols-2 gap-4">
+            <div className="mt-6 flex flex-col gap-4">
               <button
                 onClick={() => signIn('google', { callbackUrl: callbackUrl as string || '/' })}
                 className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent"

@@ -2,12 +2,19 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useProductData } from "../../context/ProductDataContext";
+import { useRouter } from 'next/router';
 
 const Trending = () => {
   const { products } = useProductData();
+  const router = useRouter();
+
+  const handleSeeProductsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push('/products');
+  }
 
   const trendingProducts = products.filter(product =>
-    product.productTags.nodes.some(tag => tag.slug.toLowerCase() === 'trending')
+    product?.productTags?.nodes.some(tag => tag.slug.toLowerCase() === 'trending')
   );
 
   useEffect(() => {
@@ -20,7 +27,7 @@ const Trending = () => {
           <h2 id="trending-heading" className="text-2xl font-bold tracking-tight text-gray-900">
             Trending products
           </h2>
-          <a href="/products" className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block">
+          <a onClick={handleSeeProductsClick} className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block">
             See everything
             <span aria-hidden="true"> &rarr;</span>
           </a>
@@ -32,14 +39,14 @@ const Trending = () => {
               role="list"
               className="mx-4 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-x-8 lg:space-x-0"
             >
-              {trendingProducts.map((product) => (
+              {trendingProducts?.map((product) => (
                 <li key={product.id} className="inline-flex w-64 flex-col text-center lg:w-auto">
                   <Link href={`/products/${product.slug}`}>
                     <div className="group relative">
                       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200">
                         <img
-                          src={product.image.mediaItemUrl}
-                          alt={product.image.slug}
+                          src={product.image?.mediaItemUrl}
+                          alt={product.image?.slug}
                           className="h-full w-full object-cover object-center group-hover:opacity-75"
                         />
                       </div>
@@ -62,7 +69,7 @@ const Trending = () => {
         </div>
 
         <div className="mt-12 px-4 sm:hidden">
-          <a href="/products" className="text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+          <a onClick={handleSeeProductsClick} className="text-sm font-semibold text-indigo-600 hover:text-indigo-500">
             See everything
             <span aria-hidden="true"> &rarr;</span>
           </a>

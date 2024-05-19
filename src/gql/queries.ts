@@ -19,6 +19,9 @@ query Categories {
           id
           name
           slug
+          image {
+            mediaItemUrl
+          }
         }
       }
     }
@@ -53,6 +56,9 @@ query GetProductsWithCategoryAndTags {
             name
             slug
             parentId
+            image {
+              mediaItemUrl
+            }
           }
         }
         attributes {

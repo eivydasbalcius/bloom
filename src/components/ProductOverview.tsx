@@ -1,132 +1,132 @@
-
 import React, { useState, useEffect } from 'react';
-import { RadioGroup } from '@headlessui/react'
-import { StarIcon } from '@heroicons/react/20/solid'
+import { RadioGroup } from '@headlessui/react';
+import { StarIcon } from '@heroicons/react/20/solid';
 
-type Product = {
-  __typename: string;
-  id: string;
-  name: string;
-  description: string;
-  price: string;
-  slug: string;
-  image: {
-    __typename: string;
-    slug: string;
-    mediaItemUrl: string;
-  };
-  productTags: {
-    __typename: string;
-    nodes: {
-      __typename: string;
-      name: string;
-      slug: string;
-    }[];
-  };
-  productCategories: {
-    __typename: string;
-    nodes: {
-      __typename: string;
-      id: string;
-      name: string;
-      slug: string;
-      parentId: string;
-    }[];
-  };
-  attributes: {
-    __typename: string;
-    nodes: {
-      __typename: string;
-      id: string;
-      name: string;
-      label: string;
-      options: string[];
-      terms: {
-        __typename: string;
-        nodes: {
-          __typename: string;
-          id: string;
-          name: string;
-          count: number;
-          slug: string;
-        }[];
-      };
-    }[];
-  } | null;
-};
+// type Product = {
+//   __typename: string;
+//   id: string;
+//   name: string;
+//   description: string;
+//   price: string;
+//   slug: string;
+//   image: {
+//     __typename: string;
+//     slug: string;
+//     mediaItemUrl: string;
+//   };
+//   productTags: {
+//     __typename: string;
+//     nodes: {
+//       __typename: string;
+//       name: string;
+//       slug: string;
+//     }[];
+//   };
+//   productCategories: {
+//     __typename: string;
+//     nodes: {
+//       __typename: string;
+//       id: string;
+//       name: string;
+//       slug: string;
+//       parentId: string;
+//     }[];
+//   };
+//   attributes: {
+//     __typename: string;
+//     nodes: {
+//       __typename: string;
+//       id: string;
+//       name: string;
+//       label: string;
+//       options: string[];
+//       terms: {
+//         __typename: string;
+//         nodes: {
+//           __typename: string;
+//           id: string;
+//           name: string;
+//           count: number;
+//           slug: string;
+//         }[];
+//       };
+//     }[];
+//   } | null;
+// };
 
 type ProductOverviewProps = {
-  product: Product[];
+  product: Product;
 };
 
-
 const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
-  const [open, setOpen] = useState(false)
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState<number>(1);
 
   const getColorOptions = () => {
     const colorAttribute = product?.attributes?.nodes?.find(attr => attr.name === 'pa_color');
-    return colorAttribute ? colorAttribute.options[0] : null;
+    return colorAttribute ? colorAttribute.options : [];
   };
 
   const getSizeOptions = () => {
     const sizeAttribute = product?.attributes?.nodes?.find(attr => attr.name === 'pa_size');
     return sizeAttribute ? sizeAttribute.terms.nodes : [];
   };
-
-  const [selectedColor, setSelectedColor] = useState(getColorOptions);
-  const [selectedSize, setSelectedSize] = useState(getSizeOptions);
-
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
   }
 
   useEffect(() => {
-    setSelectedColor(getColorOptions());
-    setSelectedSize(getSizeOptions());
+    setSelectedColor(getColorOptions()[0]);
+    setSelectedSize(getSizeOptions()[0]?.name || null);
   }, [product]);
 
   useEffect(() => {
     console.log('Trending Products:', product);
   }, [product]);
 
+  const handleAddToCart = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cartItem = {
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image.mediaItemUrl,
+      quantity,
+      attributes: {
+        color: selectedColor,
+        size: selectedSize,
+      },
+    };
+
+    let cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+    cart.push(cartItem);
+    sessionStorage.setItem('cart', JSON.stringify(cart));
+
+    // Dispatch custom event
+    const event = new CustomEvent('cart-updated');
+    window.dispatchEvent(event);
+
+  };
+
   return (
     <>
       <div className="pt-10 sm:pt-16">
         <nav aria-label="Breadcrumb">
           <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-            {/* {product.breadcrumbs.map((breadcrumb) => (
-              <li key={breadcrumb.id}>
-                <div className="flex items-center">
-                  <a href={breadcrumb.href} className="mr-2 text-sm font-medium text-gray-900">
-                    {breadcrumb.name}
-                  </a>
-                  <svg
-                    width={16}
-                    height={20}
-                    viewBox="0 0 16 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    className="h-5 w-4 text-gray-300"
-                  >
-                    <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-                  </svg>
-                </div>
-              </li>
-            ))} */}
             <li className="text-sm">
-              <a href={product.href} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
+              <a href={product.slug} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
                 {product.name}
               </a>
             </li>
           </ol>
         </nav>
 
-        {/* Image gallery */}
         <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
           <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
             <img
               src={product.image.mediaItemUrl}
-              // alt={product.images[0].alt}
+              alt={product.name}
               className="h-full w-full object-cover object-center"
             />
           </div>
@@ -134,14 +134,14 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
             <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
               <img
                 src={product.image.mediaItemUrl}
-                // alt={product.images[1].alt}
+                alt={product.name}
                 className="h-full w-full object-cover object-center"
               />
             </div>
             <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
               <img
                 src={product.image.mediaItemUrl}
-                // alt={product.images[2].alt}
+                alt={product.name}
                 className="h-full w-full object-cover object-center"
               />
             </div>
@@ -149,19 +149,17 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
           <div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
             <img
               src={product.image.mediaItemUrl}
-              // alt={product.images[3].alt}
+              alt={product.name}
               className="h-full w-full object-cover object-center"
             />
           </div>
         </div>
 
-        {/* Product info */}
         <div className="mx-auto max-w-2xl px-4 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pt-16">
           <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.name}</h1>
           </div>
 
-          {/* Options */}
           <div className="mt-4 lg:row-span-3 lg:mt-0">
             <h2 className="sr-only">Product information</h2>
             <p className="text-3xl tracking-tight text-gray-900">{product.price} €</p>
@@ -188,7 +186,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
               </div>
             </div>
 
-            <form className="mt-10">
+            <form className="mt-10" onSubmit={handleAddToCart}>
               {/* Colors */}
               {selectedColor && (
                 <div>
@@ -196,7 +194,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
                   <RadioGroup value={selectedColor} onChange={setSelectedColor} className="mt-4">
                     <RadioGroup.Label className="sr-only">Choose a color</RadioGroup.Label>
                     <div className="flex items-center space-x-3">
-                      {product?.attributes?.nodes?.find(attr => attr.name === 'pa_color').options.map((color) => (
+                      {getColorOptions().map((color) => (
                         <RadioGroup.Option
                           key={color}
                           value={color}
@@ -228,7 +226,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
                   <RadioGroup value={selectedSize} onChange={setSelectedSize} className="mt-4">
                     <RadioGroup.Label className="sr-only">Choose a size</RadioGroup.Label>
                     <div className="grid grid-cols-4 gap-4">
-                      {product?.attributes?.nodes?.find(attr => attr.name === 'pa_size')?.terms?.nodes?.map((size) => (
+                      {getSizeOptions().map((size) => (
                         <RadioGroup.Option
                           key={size.id}
                           value={size.name}
@@ -250,6 +248,22 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
                 </div>
               )}
 
+              {/* Quantity */}
+              <div className="mt-4">
+                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+                  Quantity
+                </label>
+                <input
+                  type="number"
+                  id="quantity"
+                  name="quantity"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value))}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-black"
+                />
+              </div>
+
               <button
                 type="submit"
                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -260,18 +274,14 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
           </div>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
-            {/* Description and details */}
             <div>
               <h3 className="sr-only">Description</h3>
-
               <div className="space-y-6">
                 <p className="text-base text-gray-900">{product.description}</p>
               </div>
             </div>
-
             <div className="mt-10">
               <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
-
               <div className="mt-4">
                 <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
                   {/* {product.highlights.map((highlight) => (
@@ -282,25 +292,19 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
                 </ul>
               </div>
             </div>
-
             <section aria-labelledby="shipping-heading" className="mt-10">
               <h2 id="shipping-heading" className="text-sm font-medium text-gray-900">
                 Details
               </h2>
-
               <div className="mt-4 space-y-6">
-                <p className="text-sm text-gray-600">{product.details}</p>
+                <p className="text-sm text-gray-600">{product.slug}</p>
               </div>
             </section>
           </div>
-
-
-
-
         </div>
       </div>
-
     </>
   );
-}
+};
+
 export default ProductOverview;
