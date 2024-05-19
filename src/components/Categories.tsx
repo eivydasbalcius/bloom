@@ -4,140 +4,134 @@ import { Bars3Icon, MagnifyingGlassIcon, ShoppingCartIcon, UserIcon, XMarkIcon }
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 const breadcrumbs = [
-    { id: 1, name: 'Objects', href: '#' },
-    { id: 2, name: 'Workspace', href: '#' },
-    { id: 3, name: 'Sale', href: '#' },
-  ]
-  const sortOptions = [
-    { name: 'Most Popular', href: '#', current: true },
-    { name: 'Best Rating', href: '#', current: false },
-    { name: 'Newest', href: '#', current: false },
-    { name: 'Price: Low to High', href: '#', current: false },
-    { name: 'Price: High to Low', href: '#', current: false },
-  ]
+  { id: 1, name: 'Objects', href: '#' },
+  { id: 2, name: 'Workspace', href: '#' },
+  { id: 3, name: 'Sale', href: '#' },
+]
+const sortOptions = [
+  { name: 'Most Popular', href: '#', current: true },
+  { name: 'Best Rating', href: '#', current: false },
+  { name: 'Newest', href: '#', current: false },
+  { name: 'Price: Low to High', href: '#', current: false },
+  { name: 'Price: High to Low', href: '#', current: false },
+]
 
-  interface Product {
-    id: string;
-    name: string;
-    price: string;
-    slug: string;
-    image: {
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  slug: string;
+  image: {
       mediaItemUrl: string;
-    };
-    productCategories: {
+  };
+  productCategories: {
       nodes: Array<{ id: string; name: string; slug: string; parentId: string }>;
-    };
-    attributes: {
+  };
+  attributes: {
       nodes: Array<{
-        id: string;
-        name: string;
-        label: string;
-        options: string[];
-        terms: {
-          nodes: Array<{
-            id: string;
-            name: string;
-            count: number;
-            slug: string;
-          }>;
-        };
+          id: string;
+          name: string;
+          label: string;
+          options: string[];
+          terms: {
+              nodes: Array<{
+                  id: string;
+                  name: string;
+                  count: number;
+                  slug: string;
+              }>;
+          };
       }>;
-    };
-  }
-  
-  interface FilterOptions {
-    categories: string[];
-    colors: string[];
-    sizes: string[];
-  }
-  
-  interface ActiveFilters {
-    categories: string[];
-    colors: string[];
-    sizes: string[];
-  }
-  
-  interface AllProductsPageProps {
-    products: Product[];
-  }
+  };
+}
 
-  
-  const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-    const [filters, setFilters] = useState<FilterOptions>({ categories: [], colors: [], sizes: [] });
-    const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
+interface FilterOptions {
+  categories: string[];
+  colors: string[];
+  sizes: string[];
+}
+
+interface ActiveFilters {
+  categories: string[];
+  colors: string[];
+  sizes: string[];
+}
+
+interface AllProductsPageProps {
+  products: Product[];
+}
+
+const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions>({ categories: [], colors: [], sizes: [] });
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
       categories: [],
       colors: [],
       sizes: []
-    });
-    const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
+  });
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
 
-
-    
-    useEffect(() => {
+  useEffect(() => {
       const categorySet = new Set<string>();
       const colorSet = new Set<string>();
       const sizeSet = new Set<string>();
-  
+
       products?.forEach(product => {
-        product?.productCategories?.nodes?.forEach(category => categorySet.add(category.name));
-        product?.attributes?.nodes?.forEach(attribute => {
-          attribute.terms?.nodes?.forEach(term => {
-            if (attribute.name === 'pa_color') {
-              colorSet.add(term.name);
-            } else if (attribute.name === 'pa_size') {
-              sizeSet.add(term.name);
-            }
+          product?.productCategories?.nodes?.forEach(category => categorySet.add(category.name));
+          product?.attributes?.nodes?.forEach(attribute => {
+              attribute.terms?.nodes?.forEach(term => {
+                  if (attribute.name === 'pa_color') {
+                      colorSet.add(term.name);
+                  } else if (attribute.name === 'pa_size') {
+                      sizeSet.add(term.name);
+                  }
+              });
           });
-        });
       });
-  
+
       setFilters({
-        categories: Array.from(categorySet),
-        colors: Array.from(colorSet),
-        sizes: Array.from(sizeSet)
+          categories: Array.from(categorySet),
+          colors: Array.from(colorSet),
+          sizes: Array.from(sizeSet)
       });
-    }, [products]);
-  
-    function handleFilterChange(filterType: keyof FilterOptions, value: string) {
+  }, [products]);
+
+  function handleFilterChange(filterType: keyof FilterOptions, value: string) {
       setActiveFilters(prev => {
-        const currentFilterValues = prev[filterType] || []; // Ensure it defaults to an array
-        const isValuePresent = currentFilterValues.includes(value);
-        const updatedFilters = isValuePresent
-          ? currentFilterValues.filter(v => v !== value) // Remove the filter
-          : [...currentFilterValues, value]; // Add the filter
-    
-        return {
-          
-          ...prev,
-          [filterType]: updatedFilters
-        };
+          const currentFilterValues = prev[filterType] || [];
+          const isValuePresent = currentFilterValues.includes(value);
+          const updatedFilters = isValuePresent
+              ? currentFilterValues.filter(v => v !== value)
+              : [...currentFilterValues, value];
+
+          return {
+              ...prev,
+              [filterType]: updatedFilters
+          };
       });
-    }
-  
-    useEffect(() => {
+  }
+
+  useEffect(() => {
       const filtered = products.filter(product => {
-        const categoryMatch = !activeFilters?.categories?.length || product?.productCategories?.nodes?.some(cat => activeFilters.categories.includes(cat.name));
-        const colorMatch = !activeFilters?.colors?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_color' && attr.terms.nodes.some(term => activeFilters.colors.includes(term.name)));
-        const sizeMatch = !activeFilters?.sizes?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_size' && attr.terms.nodes.some(term => activeFilters.sizes.includes(term.name)));
-        return categoryMatch && colorMatch && sizeMatch;
+          const categoryMatch = !activeFilters?.categories?.length || product?.productCategories?.nodes?.some(cat => activeFilters.categories.includes(cat.name));
+          const colorMatch = !activeFilters?.colors?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_color' && attr.terms.nodes.some(term => activeFilters.colors.includes(term.name)));
+          const sizeMatch = !activeFilters?.sizes?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_size' && attr.terms.nodes.some(term => activeFilters.sizes.includes(term.name)));
+          return categoryMatch && colorMatch && sizeMatch;
       });
 
       setDisplayedProducts(filtered);
-    }, [products, activeFilters]);
+  }, [products, activeFilters]);
 
-    const filterSections = [
+  const filterSections = [
       { id: 'categories', name: 'Category', options: filters?.categories?.map(cat => ({ value: cat, label: cat, checked: activeFilters.categories.includes(cat) })) },
       { id: 'colors', name: 'Color', options: filters?.colors?.map(color => ({ value: color, label: color, checked: activeFilters.colors.includes(color) })) },
       { id: 'sizes', name: 'Size', options: filters?.sizes?.map(size => ({ value: size, label: size, checked: activeFilters.sizes.includes(size) })) },
-    ];
+  ];
 
-    
-    function classNames(...classes: string[]) {
-        return classes.filter(Boolean).join(' ');
-      }
-
+  function classNames(...classes: string[]) {
+      return classes.filter(Boolean).join(' ');
+  }
   return (
     <>
         <div>
