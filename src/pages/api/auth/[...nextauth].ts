@@ -1,8 +1,14 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-// import FacebookProvider from "next-auth/providers/facebook";
 
-export default NextAuth({
+interface GoogleProfile {
+  id: string;
+  name: string;
+  email: string;
+  picture: string;
+}
+
+const options: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -11,23 +17,24 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
-      // Add user info to the token
       if (account && profile) {
-        token.id = profile.id;
-        token.name = profile.name;
-        token.email = profile.email;
-        token.picture = profile.picture;
+        const googleProfile = profile as GoogleProfile;
+        token.id = googleProfile.id;
+        token.name = googleProfile.name;
+        token.email = googleProfile.email;
+        token.picture = googleProfile.picture;
       }
       return token;
     },
     async session({ session, token }) {
-      // Add token info to the session
-      session.user.id = token.id;
-      session.user.name = token.name;
-      session.user.email = token.email;
-      session.user.image = token.picture;
+      // session!.user!.id = token.id;
+      session!.user!.name = token.name;
+      session!.user!.email = token.email;
+      session!.user!.image = token.picture;
       return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+export default NextAuth(options);
