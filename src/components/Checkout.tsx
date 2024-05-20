@@ -9,8 +9,10 @@ interface CartItem {
   quantity: number;
   image: string;
   name: string;
-  color: string;
-  size: string;
+  attributes: {
+    color: string | null;
+    size: string | null;
+  };
 }
 
 const Checkout = () => {
@@ -77,8 +79,8 @@ const Checkout = () => {
                           <div className="space-y-1 text-sm font-medium">
                             <h3 className="text-gray-900">{product?.name}</h3>
                             <p className="text-gray-900">{product?.price}€</p>
-                            <p className="text-gray-500">{product?.color}</p>
-                            <p className="text-gray-500">{product?.size}</p>
+                            <p className="text-gray-500">{product?.attributes?.color}</p>
+                            <p className="text-gray-500">{product?.attributes?.size}</p>
                           </div>
                           <div className="flex space-x-4">
                             <button type="button" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
@@ -261,7 +263,7 @@ const Checkout = () => {
                       type="email"
                       id="email-address"
                       name="email-address"
-                      value={session?.user?.email}
+                      value={session?.user?.email || ''}
                       autoComplete="email"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-black"
                     />
