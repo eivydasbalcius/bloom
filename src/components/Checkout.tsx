@@ -4,8 +4,17 @@ import { Disclosure } from '@headlessui/react';
 import { LockClosedIcon } from '@heroicons/react/20/solid';
 import { useSession } from "next-auth/react";
 
+interface CartItem {
+  price: number;
+  quantity: number;
+  image: string;
+  name: string;
+  color: string;
+  size: string;
+}
+
 const Checkout = () => {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [subtotal, setSubtotal] = useState(0);
   const [taxes, setTaxes] = useState(0);
   const [total, setTotal] = useState(0);
@@ -23,17 +32,17 @@ const Checkout = () => {
   }
 
   useEffect(() => {
-    const cartData = JSON.parse(sessionStorage.getItem('cart') ?? '') || [];
-    setCart(cartData);
+    const cartData = sessionStorage.getItem('cart');
+    const parsedCartData: CartItem[] = cartData ? JSON.parse(cartData) : [];
+    setCart(parsedCartData);
 
-    const subTotal = cartData.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const tax = subTotal * 0.092; // Assuming 9.2% tax rate
+    const subTotal = parsedCartData.reduce((acc: number, item: CartItem) => acc + item.price * item.quantity, 0);
+    const tax = subTotal * 0.092;
     const totalAmount = subTotal + tax;
 
-
-    setSubtotal(subTotal.toFixed(2));
-    setTaxes(Number(tax.toFixed(2))); // Convert the string value to a number
-    setTotal(totalAmount.toFixed(2));
+    setSubtotal(parseFloat(subTotal.toFixed(2)));
+    setTaxes(parseFloat(tax.toFixed(2)));
+    setTotal(parseFloat(totalAmount.toFixed(2)));
   }, []);
 
   return (
