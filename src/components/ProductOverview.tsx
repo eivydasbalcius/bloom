@@ -2,57 +2,62 @@ import React, { useState, useEffect } from 'react';
 import { RadioGroup } from '@headlessui/react';
 import { StarIcon } from '@heroicons/react/20/solid';
 
-// type Product = {
-//   __typename: string;
-//   id: string;
-//   name: string;
-//   description: string;
-//   price: string;
-//   slug: string;
-//   image: {
-//     __typename: string;
-//     slug: string;
-//     mediaItemUrl: string;
-//   };
-//   productTags: {
-//     __typename: string;
-//     nodes: {
-//       __typename: string;
-//       name: string;
-//       slug: string;
-//     }[];
-//   };
-//   productCategories: {
-//     __typename: string;
-//     nodes: {
-//       __typename: string;
-//       id: string;
-//       name: string;
-//       slug: string;
-//       parentId: string;
-//     }[];
-//   };
-//   attributes: {
-//     __typename: string;
-//     nodes: {
-//       __typename: string;
-//       id: string;
-//       name: string;
-//       label: string;
-//       options: string[];
-//       terms: {
-//         __typename: string;
-//         nodes: {
-//           __typename: string;
-//           id: string;
-//           name: string;
-//           count: number;
-//           slug: string;
-//         }[];
-//       };
-//     }[];
-//   } | null;
-// };
+interface MediaItem {
+  __typename: string;
+  slug: string;
+  mediaItemUrl: string;
+}
+
+interface ProductCategory {
+  __typename: string;
+  id: string;
+  name: string;
+  slug: string;
+  parentId: string | null;
+}
+
+interface TermNode {
+  __typename: string;
+  id: string;
+  name: string;
+  count: number;
+  slug: string;
+}
+
+interface Attribute {
+  __typename: string;
+  id: string;
+  attributeId: number;
+  name: string;
+  label: string;
+  options: string[];
+  terms: {
+    __typename: string;
+    nodes: TermNode[];
+  };
+}
+
+interface Product {
+  __typename: string;
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  slug: string;
+  image: MediaItem;
+  productTags: {
+    __typename: string;
+    nodes: any[];
+  };
+  productCategories: {
+    __typename: string;
+    nodes: ProductCategory[];
+  };
+  attributes: {
+    __typename: string;
+    nodes: Attribute[];
+  };
+}
 
 type ProductOverviewProps = {
   product: Product;
@@ -171,8 +176,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
                     <StarIcon
                       key={rating}
                       className={classNames(
-                        'text-gray-900',
-                        'text-gray-200',
+                        rating < 4 ? 'text-gray-900' : 'text-gray-200',
                         'h-5 w-5 flex-shrink-0'
                       )}
                       aria-hidden="true"
