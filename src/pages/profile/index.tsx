@@ -21,9 +21,9 @@ export default function Profile() {
     return (
         <div>
             <h1>Profile</h1>
-            <p>Signed in as {session?.user?.email}</p>
+            {/* <p>Signed in as {session?.user?.email}</p>
             <img src={session?.user?.image} alt={session?.user?.name} />
-            <button onClick={() => signOut()}>Sign out</button>
+            <button onClick={() => signOut()}>Sign out</button> */}
         </div>
     );
 }
