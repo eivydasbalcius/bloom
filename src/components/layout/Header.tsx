@@ -10,34 +10,40 @@ import { useProductData } from '@/context/ProductDataContext';
 import { useRouter } from 'next/router';
 import logo from "../../../public/bloom.jpeg";
 
-const currencies = ['EUR', 'CAD', 'USD', 'AUD', 'GBP']
-const navigation = {
-  categories: [
-    // your categories data...
-  ],
-  pages: [
-    { name: 'Company', href: '#' },
-    { name: 'Stores', href: '#' },
-  ],
-};
+const currencies = ['EUR', 'CAD', 'USD', 'AUD', 'GBP'];
 
-interface HeaderProps { }
+interface Category {
+  __typename: string;
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  image: string | null;
+  children: {
+    __typename: string;
+    nodes: SubCategory[];
+  };
+}
 
-const Header = (props: HeaderProps) => {
+interface SubCategory {
+  __typename: string;
+  id: string;
+  name: string;
+  slug: string;
+  image: string | null;
+}
+
+const Header: React.FC = () => {
   const { categories } = useProductData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartQuantity, setCartQuantity] = useState(0);
   const router = useRouter();
-
-  function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(' ');
-  }
   const { data: session } = useSession();
 
   useEffect(() => {
     const getCartQuantity = () => {
       const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
-      const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+      const totalQuantity = cart.reduce((total: number, item: { quantity: number }) => total + item.quantity, 0);
       setCartQuantity(totalQuantity);
     };
 
@@ -71,6 +77,10 @@ const Header = (props: HeaderProps) => {
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
   }
+
+  useEffect(() => {
+    console.log('Categories:', categories);
+  }, [categories]);
 
   return (
     <>
@@ -110,11 +120,10 @@ const Header = (props: HeaderProps) => {
                   </button>
                 </div>
 
-                {/* Links */}
                 <Tab.Group as="div" className="mt-2">
                   <div className="border-b border-gray-200">
                     <Tab.List className="-mb-px flex space-x-8 px-4">
-                      {navigation.categories.map((category) => (
+                      {categories.map((category: Category) => (
                         <Tab
                           key={category.name}
                           className={({ selected }) =>
@@ -130,7 +139,7 @@ const Header = (props: HeaderProps) => {
                     </Tab.List>
                   </div>
                   <Tab.Panels as={Fragment}>
-                    {navigation.categories.map((category, categoryIdx) => (
+                    {categories.map((category: Category, categoryIdx: number) => (
                       <Tab.Panel key={category.name} className="space-y-12 px-4 pb-6 pt-10">
                         <div className="grid grid-cols-1 items-start gap-x-6 gap-y-10">
                           <div className="grid grid-cols-1 gap-x-6 gap-y-10">
@@ -143,54 +152,9 @@ const Header = (props: HeaderProps) => {
                                 aria-labelledby={`mobile-featured-heading-${categoryIdx}`}
                                 className="mt-6 space-y-6"
                               >
-                                {category.featured.map((item) => (
+                                {category.children.nodes.map((item) => (
                                   <li key={item.name} className="flex">
-                                    <a href={item.href} className="text-gray-500">
-                                      {item.name}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div>
-                              <p id="mobile-categories-heading" className="font-medium text-gray-900">
-                                Categories
-                              </p>
-                              <ul role="list" aria-labelledby="mobile-categories-heading" className="mt-6 space-y-6">
-                                {category.categories.map((item) => (
-                                  <li key={item.name} className="flex">
-                                    <a href={item.href} className="text-gray-500">
-                                      {item.name}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 gap-x-6 gap-y-10">
-                            <div>
-                              <p id="mobile-collection-heading" className="font-medium text-gray-900">
-                                Collection
-                              </p>
-                              <ul role="list" aria-labelledby="mobile-collection-heading" className="mt-6 space-y-6">
-                                {category.collection.map((item) => (
-                                  <li key={item.name} className="flex">
-                                    <a href={item.href} className="text-gray-500">
-                                      {item.name}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-
-                            <div>
-                              <p id="mobile-brand-heading" className="font-medium text-gray-900">
-                                Brands
-                              </p>
-                              <ul role="list" aria-labelledby="mobile-brand-heading" className="mt-6 space-y-6">
-                                {category.brands.map((item) => (
-                                  <li key={item.name} className="flex">
-                                    <a href={item.href} className="text-gray-500">
+                                    <a href={item.slug} className="text-gray-500">
                                       {item.name}
                                     </a>
                                   </li>
@@ -204,7 +168,7 @@ const Header = (props: HeaderProps) => {
                   </Tab.Panels>
                 </Tab.Group>
 
-                <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+                {/* <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   {navigation.pages.map((page) => (
                     <div key={page.name} className="flow-root">
                       <a href={page.href} className="-m-2 block p-2 font-medium text-gray-900">
@@ -212,7 +176,7 @@ const Header = (props: HeaderProps) => {
                       </a>
                     </div>
                   ))}
-                </div>
+                </div> */}
 
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   <div className="flow-root">
@@ -228,7 +192,6 @@ const Header = (props: HeaderProps) => {
                 </div>
 
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  {/* Currency selector */}
                   <form>
                     <div className="inline-block">
                       <label htmlFor="mobile-currency" className="sr-only">
@@ -258,10 +221,8 @@ const Header = (props: HeaderProps) => {
       </Transition.Root>
       <header className="relative z-10">
         <nav aria-label="Top">
-          {/* Top navigation */}
           <div className="bg-gray-900">
             <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-              {/* Currency selector */}
               <form className="hidden lg:block lg:flex-1">
                 <div className="flex">
                   <label htmlFor="desktop-currency" className="sr-only">
@@ -302,12 +263,10 @@ const Header = (props: HeaderProps) => {
             </div>
           </div>
 
-          {/* Secondary navigation */}
           <div className="bg-white">
             <div className="border-b border-gray-200">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
-                  {/* Logo (lg+) */}
                   <div className="hidden lg:flex lg:items-center">
                     <a onClick={handleLogoClick}>
                       <span className="sr-only">Your Company</span>
@@ -323,9 +282,9 @@ const Header = (props: HeaderProps) => {
 
                   <div className="hidden h-full lg:flex">
                     <Popover.Group className="ml-8">
-                      <div className="flex h-full flex-row-reverse justify-center space-x-8">
-                        {categories.map((category, categoryIdx) => (
-                          <Popover key={category.id} className="flex header-category">
+                      <div className="flex h-full space-x-8">
+                        {categories.map((category: Category) => (
+                          <Popover key={category.id} className="flex">
                             {({ open }) => (
                               <>
                                 <div className="relative flex">
@@ -353,14 +312,12 @@ const Header = (props: HeaderProps) => {
                                     <div className="relative bg-white">
                                       <div className="mx-auto max-w-7xl px-8">
                                         <div className="grid grid-cols-2 items-start gap-x-8 gap-y-10 pb-12 pt-10">
-                                          {/* You might need to adjust this section depending on your data structure */}
                                           <div className="grid grid-cols-2 gap-x-8 gap-y-10">
                                             <div>
-                                              <p id={`desktop-featured-heading-${categoryIdx}`} className="font-medium text-gray-900">
+                                              <p id={`desktop-featured-heading-${category.id}`} className="font-medium text-gray-900">
                                                 Categories
                                               </p>
-                                              <ul role="list" aria-labelledby={`desktop-featured-heading-${categoryIdx}`} className="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
-                                                {/* Map through subcategories or featured links */}
+                                              <ul role="list" aria-labelledby={`desktop-featured-heading-${category.id}`} className="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
                                                 {category.children.nodes.map((subCategory) => (
                                                   <li key={subCategory.id} className="flex">
                                                     <a href="#" className="hover:text-gray-800">
@@ -380,37 +337,33 @@ const Header = (props: HeaderProps) => {
                             )}
                           </Popover>
                         ))}
-
-                        {/* Other static pages or links */}
                       </div>
                     </Popover.Group>
                   </div>
-
 
                   <div className="flex flex-1 items-center lg:hidden">
                     <button
                       type="button"
                       className="-ml-2 rounded-md bg-white p-2 text-gray-400"
-
+                      onClick={() => setMobileMenuOpen(true)}
                     >
                       <span className="sr-only">Open menu</span>
                       <Bars3Icon className="h-6 w-6" aria-hidden="true" />
                     </button>
-
-
                     <a href="#" className="ml-2 p-2 text-gray-400 hover:text-gray-500">
                       <span className="sr-only">Search</span>
                       <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
                     </a>
                   </div>
 
-
-                  <a href="#" className="lg:hidden">
+                  <a onClick={handleLogoClick} className="lg:hidden">
                     <span className="sr-only">Your Company</span>
-                    <img
+                    <Image
                       src={logo}
                       alt=""
                       className="h-8 w-auto"
+                      width={100}
+                      height={100}
                     />
                   </a>
 
@@ -426,7 +379,7 @@ const Header = (props: HeaderProps) => {
 
                         <div className="flex ">
                           {session?.user?.image ?
-                            (<img src={session.user.image} alt={session?.user?.name} className="h-8 w-8 rounded-full" />)
+                            (<Image src={session.user.image} alt={session?.user?.name ?? ""} className="h-8 w-8 rounded-full" width={32} height={32} />)
                             :
                             (<a href="/auth/signin" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
                               <span className="sr-only">Account</span>
@@ -454,9 +407,8 @@ const Header = (props: HeaderProps) => {
             </div>
           </div>
         </nav>
-      </header >
+      </header>
     </>
-
   );
 };
 
