@@ -18,7 +18,7 @@ export default function Homepage() {
     <>
       <Hero onScrollToSection={handleScrollToSection} />
       <Trending />
-      <Collections />
+      {/* <Collections /> */}
       <div className="relative overflow-hidden">
         <div ref={saleRef}>
           <Sale />
