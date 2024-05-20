@@ -87,7 +87,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
   }, [product]);
 
   useEffect(() => {
-    console.log('Trending Products:', product);
+    console.log('Product:', product);
   }, [product]);
 
   const handleAddToCart = (e: React.FormEvent) => {
