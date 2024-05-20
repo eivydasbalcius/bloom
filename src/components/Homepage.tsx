@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Hero from "./homepage/Hero";
-import Collections from "./homepage/Collections";
+// import Collections from "./homepage/Collections";
 import Trending from "./homepage/Trending";
 import Testimonials from "./homepage/Testimonials";
 import Sale from "./homepage/Sale";
