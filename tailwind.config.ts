@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import forms from '@tailwindcss/forms';
+import aspectRatio from '@tailwindcss/aspect-ratio';
 
 const config: Config = {
   content: [
@@ -8,6 +10,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      gridTemplateRows: {
+        '[auto,auto,1fr]': 'auto auto 1fr',
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -15,6 +20,9 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    forms,
+    aspectRatio,
+  ],
 };
 export default config;
