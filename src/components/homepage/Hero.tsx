@@ -78,6 +78,7 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
             className="h-full w-full object-cover object-center"
             width={832}
             height={777}
+            priority
           />
         </div>
       </div>
