@@ -1,59 +1,60 @@
 
 import React, { useState } from 'react'
 import { CheckIcon, ClockIcon, QuestionMarkCircleIcon, XMarkIcon as XMarkIconMini } from '@heroicons/react/20/solid'
+import Image from 'next/image';
 
 const products = [
-    {
-      id: 1,
-      name: 'Basic Tee',
-      href: '#',
-      price: '$32.00',
-      color: 'Sienna',
-      inStock: true,
-      size: 'Large',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-01.jpg',
-      imageAlt: "Front of men's Basic Tee in sienna.",
-    },
-    {
-      id: 2,
-      name: 'Basic Tee',
-      href: '#',
-      price: '$32.00',
-      color: 'Black',
-      inStock: false,
-      leadTime: '3–4 weeks',
-      size: 'Large',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-02.jpg',
-      imageAlt: "Front of men's Basic Tee in black.",
-    },
-    {
-      id: 3,
-      name: 'Nomad Tumbler',
-      href: '#',
-      price: '$35.00',
-      color: 'White',
-      inStock: true,
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-03.jpg',
-      imageAlt: 'Insulated bottle with white base and black snap lid.',
-    },
-  ]
-  const relatedProducts = [
-    {
-      id: 1,
-      name: 'Billfold Wallet',
-      href: '#',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-related-product-01.jpg',
-      imageAlt: 'Front of Billfold Wallet in natural leather.',
-      price: '$118',
-      color: 'Natural',
-    },
-    // More products...
-  ]
+  {
+    id: 1,
+    name: 'Basic Tee',
+    href: '#',
+    price: '$32.00',
+    color: 'Sienna',
+    inStock: true,
+    size: 'Large',
+    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-01.jpg',
+    imageAlt: "Front of men's Basic Tee in sienna.",
+  },
+  {
+    id: 2,
+    name: 'Basic Tee',
+    href: '#',
+    price: '$32.00',
+    color: 'Black',
+    inStock: false,
+    leadTime: '3–4 weeks',
+    size: 'Large',
+    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-02.jpg',
+    imageAlt: "Front of men's Basic Tee in black.",
+  },
+  {
+    id: 3,
+    name: 'Nomad Tumbler',
+    href: '#',
+    price: '$35.00',
+    color: 'White',
+    inStock: true,
+    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-03.jpg',
+    imageAlt: 'Insulated bottle with white base and black snap lid.',
+  },
+]
+const relatedProducts = [
+  {
+    id: 1,
+    name: 'Billfold Wallet',
+    href: '#',
+    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-related-product-01.jpg',
+    imageAlt: 'Front of Billfold Wallet in natural leather.',
+    price: '$118',
+    color: 'Natural',
+  },
+  // More products...
+]
 
 export default function ShoppingCart() {
   return (
     <>
-<main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
+      <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Shopping Cart</h1>
 
         <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
@@ -66,10 +67,12 @@ export default function ShoppingCart() {
               {products.map((product, productIdx) => (
                 <li key={product.id} className="flex py-6 sm:py-10">
                   <div className="flex-shrink-0">
-                    <img
+                    <Image
                       src={product.imageSrc}
                       alt={product.imageAlt}
                       className="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
+                      width={192}
+                      height={192}
                     />
                   </div>
 
@@ -196,10 +199,12 @@ export default function ShoppingCart() {
             {relatedProducts.map((relatedProduct) => (
               <div key={relatedProduct.id} className="group relative">
                 <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md lg:aspect-none group-hover:opacity-75 lg:h-80">
-                  <img
+                  <Image
                     src={relatedProduct.imageSrc}
                     alt={relatedProduct.imageAlt}
                     className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                    width={280}
+                    height={380}
                   />
                 </div>
                 <div className="mt-4 flex justify-between">

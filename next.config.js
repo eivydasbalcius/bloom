@@ -10,7 +10,7 @@ module.exports = {
         pathname: "/a/*",
       },
     ],
-    domains: ["tailwindui.com"],
+    domains: ["tailwindui.com", "blueviolet-antelope-713639.hostingersite.com"],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },

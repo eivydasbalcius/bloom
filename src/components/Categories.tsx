@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Dialog, Disclosure, Menu, Popover, Tab, Transition } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingCartIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import Image from 'next/image'
 
 const breadcrumbs = [
   { id: 1, name: 'Objects', href: '#' },
@@ -124,9 +125,9 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
   }, [products, activeFilters]);
 
   const filterSections = [
-    { id: 'categories', name: 'Category', options: filters?.categories?.map(cat => ({ value: cat, label: cat, checked: activeFilters.categories.includes(cat) })) },
-    { id: 'colors', name: 'Color', options: filters?.colors?.map(color => ({ value: color, label: color, checked: activeFilters.colors.includes(color) })) },
-    { id: 'sizes', name: 'Size', options: filters?.sizes?.map(size => ({ value: size, label: size, checked: activeFilters.sizes.includes(size) })) },
+    { id: 'categories', name: 'Kategorija', options: filters?.categories?.map(cat => ({ value: cat, label: cat, checked: activeFilters.categories.includes(cat) })) },
+    { id: 'colors', name: 'Spalva', options: filters?.colors?.map(color => ({ value: color, label: color, checked: activeFilters.colors.includes(color) })) },
+    { id: 'sizes', name: 'Dydis', options: filters?.sizes?.map(size => ({ value: size, label: size, checked: activeFilters.sizes.includes(size) })) },
   ];
 
   function classNames(...classes: string[]) {
@@ -137,10 +138,10 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
       <div>
         <div className="bg-white">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Workspace sale</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900"></h1>
             <p className="mt-4 max-w-xl text-sm text-gray-700">
-              Our thoughtfully designed workspace objects are crafted in limited runs. Improve your productivity and
-              organization with these sale items before we run out.
+              {/* Our thoughtfully designed workspace objects are crafted in limited runs. Improve your productivity and
+              organization with these sale items before we run out. */}
             </p>
           </div>
         </div>
@@ -158,7 +159,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
                 className="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden"
                 onClick={() => setMobileFiltersOpen(true)}
               >
-                Filters
+              Filtrai
               </button>
 
               <div className="hidden sm:block">
@@ -218,7 +219,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
           <div className="bg-gray-100">
             <div className="mx-auto max-w-7xl px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
               <h3 className="text-sm font-medium text-gray-500">
-                Filters
+              Pasirinkti filtrai:
                 <span className="sr-only">, active</span>
               </h3>
 
@@ -258,10 +259,12 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
             {displayedProducts.map((product) => (
               <a key={product.id} href={`/products/${product.slug}`} className="group">
                 <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
-                  <img
+                  <Image
                     src={product?.image?.mediaItemUrl}
                     alt={product?.name}
                     className="h-full w-full object-cover object-center group-hover:opacity-75"
+                    width={280}
+                    height={320}
                   />
                 </div>
                 <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>

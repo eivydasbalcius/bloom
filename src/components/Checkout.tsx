@@ -4,6 +4,7 @@ import { RadioGroup } from '@headlessui/react'
 import { CheckCircleIcon, TrashIcon } from '@heroicons/react/20/solid'
 import { useSession } from "next-auth/react";
 import axios from 'axios';
+import Image from 'next/image';
 
 interface CartItem {
   productId: number;
@@ -32,11 +33,11 @@ interface Customer {
 
 
 const deliveryMethods = [
-  { id: 1, title: 'Standard', turnaround: '4–10 business days', price: '$5.00' },
-  { id: 2, title: 'Express', turnaround: '2–5 business days', price: '$16.00' },
+  { id: 1, title: 'Standartinis', turnaround: '3-7 Darbo dienos', price: 'Nemokamas' },
+  { id: 2, title: 'Greitasis', turnaround: '1–3 Darbo dienos', price: '15.00€' },
 ]
 const paymentMethods = [
-  { id: 'credit-card', title: 'Credit card' },
+  { id: 'credit-card', title: 'Kreditine kortele' },
   { id: 'paypal', title: 'PayPal' },
 ]
 
@@ -148,11 +149,11 @@ const Checkout = () => {
         <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16" onSubmit={handleSubmitOrder}>
           <div>
             <div>
-              <h2 className="text-lg font-medium text-gray-900">Contact information</h2>
+              <h2 className="text-lg font-medium text-gray-900">Kontaktinė informacija</h2>
 
               <div className="mt-4">
                 <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
-                  Email address
+                  El. paštas*
                 </label>
                 <div className="mt-1">
                   <input
@@ -168,12 +169,12 @@ const Checkout = () => {
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
-              <h2 className="text-lg font-medium text-gray-900">Shipping information</h2>
+              <h2 className="text-lg font-medium text-gray-900">Pristatymo informacija</h2>
 
               <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
                 <div>
                   <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
-                    First name
+                    Vardas*
                   </label>
                   <div className="mt-1">
                     <input
@@ -188,7 +189,7 @@ const Checkout = () => {
 
                 <div>
                   <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
-                    Last name
+                    Pavardė*
                   </label>
                   <div className="mt-1">
                     <input
@@ -203,7 +204,7 @@ const Checkout = () => {
 
                 <div className="sm:col-span-2">
                   <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-                    Company
+                    Įmonės pavadinimas
                   </label>
                   <div className="mt-1">
                     <input
@@ -217,7 +218,7 @@ const Checkout = () => {
 
                 <div className="sm:col-span-2">
                   <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                    Address
+                    Pilnas adresas*
                   </label>
                   <div className="mt-1">
                     <input
@@ -232,7 +233,7 @@ const Checkout = () => {
 
                 <div className="sm:col-span-2">
                   <label htmlFor="apartment" className="block text-sm font-medium text-gray-700">
-                    Apartment, suite, etc.
+                    Pilnas adresas 2
                   </label>
                   <div className="mt-1">
                     <input
@@ -246,7 +247,7 @@ const Checkout = () => {
 
                 <div>
                   <label htmlFor="city" className="block text-sm font-medium text-gray-700">
-                    City
+                    Miestas*
                   </label>
                   <div className="mt-1">
                     <input
@@ -261,7 +262,7 @@ const Checkout = () => {
 
                 <div>
                   <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                    Country
+                    Šalis*
                   </label>
                   <div className="mt-1">
                     <select
@@ -279,7 +280,7 @@ const Checkout = () => {
 
                 <div>
                   <label htmlFor="region" className="block text-sm font-medium text-gray-700">
-                    State / Province
+                    Regionas
                   </label>
                   <div className="mt-1">
                     <input
@@ -294,7 +295,7 @@ const Checkout = () => {
 
                 <div>
                   <label htmlFor="postal-code" className="block text-sm font-medium text-gray-700">
-                    Postal code
+                    Pašto kodas*
                   </label>
                   <div className="mt-1">
                     <input
@@ -309,7 +310,7 @@ const Checkout = () => {
 
                 <div className="sm:col-span-2">
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                    Phone
+                    Tel. numeris*
                   </label>
                   <div className="mt-1">
                     <input
@@ -326,7 +327,7 @@ const Checkout = () => {
 
             <div className="mt-10 border-t border-gray-200 pt-10">
               <RadioGroup value={selectedDeliveryMethod} onChange={setSelectedDeliveryMethod}>
-                <RadioGroup.Label className="text-lg font-medium text-gray-900">Delivery method</RadioGroup.Label>
+                <RadioGroup.Label className="text-lg font-medium text-gray-900">Pristatymas</RadioGroup.Label>
 
                 <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
                   {deliveryMethods.map((deliveryMethod) => (
@@ -378,10 +379,10 @@ const Checkout = () => {
 
             {/* Payment */}
             <div className="mt-10 border-t border-gray-200 pt-10">
-              <h2 className="text-lg font-medium text-gray-900">Payment</h2>
+              <h2 className="text-lg font-medium text-gray-900">Apmokėjimo būdai</h2>
 
               <fieldset className="mt-4">
-                <legend className="sr-only">Payment type</legend>
+                <legend className="sr-only">Kreditine kortele</legend>
                 <div className="space-y-4 sm:flex sm:items-center sm:space-x-10 sm:space-y-0">
                   {paymentMethods.map((paymentMethod, paymentMethodIdx) => (
                     <div key={paymentMethod.id} className="flex items-center">
@@ -413,7 +414,7 @@ const Checkout = () => {
               <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
                 <div className="col-span-4">
                   <label htmlFor="card-number" className="block text-sm font-medium text-gray-700">
-                    Card number
+                    Kreditinės kortelės numeris
                   </label>
                   <div className="mt-1">
                     <input
@@ -428,7 +429,7 @@ const Checkout = () => {
 
                 <div className="col-span-4">
                   <label htmlFor="name-on-card" className="block text-sm font-medium text-gray-700">
-                    Name on card
+                    Vardas ir Pavardė
                   </label>
                   <div className="mt-1">
                     <input
@@ -443,7 +444,7 @@ const Checkout = () => {
 
                 <div className="col-span-3">
                   <label htmlFor="expiration-date" className="block text-sm font-medium text-gray-700">
-                    Expiration date (MM/YY)
+                    Galiojimo data (MM/YY)
                   </label>
                   <div className="mt-1">
                     <input
@@ -476,7 +477,7 @@ const Checkout = () => {
 
           {/* Order summary */}
           <div className="mt-10 lg:mt-0">
-            <h2 className="text-lg font-medium text-gray-900">Order summary</h2>
+            <h2 className="text-lg font-medium text-gray-900">Pirkinių krepšelis</h2>
 
             <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
               <h3 className="sr-only">Items in your cart</h3>
@@ -484,7 +485,7 @@ const Checkout = () => {
                 {cart.map((product, index) => (
                   <li key={index} className="flex px-4 py-6 sm:px-6">
                     <div className="flex-shrink-0">
-                      <img src={product.image} alt={product.name} className="w-20 rounded-md" />
+                      <Image src={product.image} alt={product.name} className="w-20 rounded-md" width={80} height={80} />
                     </div>
                     <div className="ml-6 flex flex-1 flex-col">
                       <div className="flex">
@@ -509,17 +510,17 @@ const Checkout = () => {
                         </div>
                       </div>
                       <div className="flex flex-1 items-end justify-between pt-2">
-                        <p className="mt-1 text-sm font-medium text-gray-900">{product.price}€</p>
+                        <p className="mt-1 text-sm font-medium text-gray-900">{product.price} €</p>
                         <div className="ml-4">
                           <label htmlFor={`quantity-${index}`} className="sr-only">
-                            Quantity
+                            Kiekis
                           </label>
                           <select
                             id={`quantity-${index}`}
                             name="quantity"
                             value={product.quantity}
                             onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
-                            className="rounded-md border border-gray-300 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                            className="rounded-md border border-gray-300 text-left text-base font-medium shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
                           >
                             {[...Array(10)].map((_, i) => (
                               <option key={i} value={i + 1}>{i + 1}</option>
@@ -533,20 +534,20 @@ const Checkout = () => {
               </ul>
               <dl className="space-y-6 border-t border-gray-200 px-4 py-6 sm:px-6">
                 <div className="flex items-center justify-between">
-                  <dt className="text-sm text-black">Subtotal</dt>
-                  <dd className="text-sm font-medium text-gray-900">{subtotal}€</dd>
+                  <dt className="text-sm text-black">Tarpinė suma</dt>
+                  <dd className="text-sm font-medium text-gray-900">{subtotal} €</dd>
                 </div>
                 <div className="flex items-center justify-between">
-                  <dt className="text-sm text-black">Taxes</dt>
-                  <dd className="text-sm font-medium text-gray-900">{taxes}€</dd>
+                  <dt className="text-sm text-black">Mokesčiai</dt>
+                  <dd className="text-sm font-medium text-gray-900">{taxes} €</dd>
                 </div>
                 <div className="flex items-center justify-between">
-                  <dt className="text-sm text-black">Shipping</dt>
-                  <dd className="text-sm font-medium text-gray-900">FREE</dd>
+                  <dt className="text-sm text-black">Pristaymas</dt>
+                  <dd className="text-sm font-medium text-gray-900">0,00 €</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-200 pt-6">
-                  <dt className="text-base font-medium text-black">Total</dt>
-                  <dd className="text-base font-medium text-gray-900">{total}€</dd>
+                  <dt className="text-base font-medium text-black">Galutinė kaina</dt>
+                  <dd className="text-base font-medium text-gray-900">{total} €</dd>
                 </div>
               </dl>
               <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
@@ -554,7 +555,7 @@ const Checkout = () => {
                   type="submit"
                   className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                 >
-                  Confirm order
+                  Patvirtinti užsakymą
                 </button>
               </div>
             </div>
