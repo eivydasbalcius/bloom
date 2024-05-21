@@ -10,6 +10,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import Head from 'next/head';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -22,6 +23,10 @@ type AppPropsWithLayout = AppProps & {
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => (
     <>
+    <Head>
+      <title>Bloom</title>
+      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    </Head>
       <Header />
       <div className="bg-white">
         {page}
