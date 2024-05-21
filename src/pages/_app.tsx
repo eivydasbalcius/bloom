@@ -9,6 +9,7 @@ import { ProductDataProvider } from '@/context/ProductDataContext';
 import { SessionProvider } from 'next-auth/react';
 import { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -24,6 +25,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
       <Header />
       <div className="bg-white">
         {page}
+        <SpeedInsights />
       </div>
       <Footer />
     </>
@@ -32,7 +34,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <ApolloProvider client={apolloClient}>
       <ProductDataProvider>
-      <SessionProvider session={pageProps.session}>
+        <SessionProvider session={pageProps.session}>
           {getLayout(<Component {...pageProps} />)}
         </SessionProvider>
       </ProductDataProvider>
