@@ -36,6 +36,7 @@ query GetProductsWithCategoryAndTags {
     nodes {
       ... on SimpleProduct {
         id
+        databaseId
         name
         description(format: RAW)
         price(format: RAW)
@@ -99,6 +100,7 @@ query GetProductBySlug($slug: ID!) {
   product(id: $slug, idType: SLUG) {
     ... on SimpleProduct {
       id
+      databaseId
       name
       description(format: RAW)
       price(format: RAW)
