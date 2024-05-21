@@ -179,15 +179,21 @@ const Header: React.FC = () => {
                 </div> */}
 
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  <div className="flow-root">
+                  {/* <div className="flow-root">
                     <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
                       Create an account
                     </a>
-                  </div>
+                  </div> */}
                   <div className="flow-root">
-                    <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
-                      Sign in
-                    </a>
+                    {session ? (
+                      <a onClick={() => signOut()} className="-m-2 block p-2 font-medium text-gray-900">
+                        Atsijungti
+                      </a>
+                    ) : (
+                      <a href="/auth/signin" className="-m-2 block p-2 font-medium text-gray-900">
+                        Prisijungti
+                      </a>
+                    )}
                   </div>
                 </div>
 
@@ -226,7 +232,7 @@ const Header: React.FC = () => {
               <form className="hidden lg:block lg:flex-1">
                 <div className="flex">
                   <label htmlFor="desktop-currency" className="sr-only">
-                    Currency
+                    Valiutos
                   </label>
                   <div className="group relative -ml-2 rounded-md border-transparent bg-gray-900 focus-within:ring-2 focus-within:ring-white">
                     <select
@@ -246,17 +252,17 @@ const Header: React.FC = () => {
               </form>
 
               <p className="flex-1 text-center text-sm font-medium text-white lg:flex-none">
-                Get free delivery on orders over 100€
+                *Nemokamas pristatymas nuo 50€
               </p>
 
               <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
                 {session ? (
                   <button onClick={() => signOut()} className="text-sm font-medium text-white hover:text-gray-100">
-                    Log out
+                    Atsijungti
                   </button>
                 ) : (
                   <a href="/auth/signin" className="text-sm font-medium text-white hover:text-gray-100">
-                    Sign in
+                    Prisijungti
                   </a>
                 )}
               </div>
@@ -271,7 +277,7 @@ const Header: React.FC = () => {
                     <a onClick={handleLogoClick}>
                       <span className="sr-only">Your Company</span>
                       <Image
-                        className="h-8 w-auto"
+                        className="h-8 w-auto cursor-pointer"
                         src={logo}
                         alt=""
                         width={100}
@@ -315,7 +321,7 @@ const Header: React.FC = () => {
                                           <div className="grid grid-cols-2 gap-x-8 gap-y-10">
                                             <div>
                                               <p id={`desktop-featured-heading-${category.id}`} className="font-medium text-gray-900">
-                                                Categories
+                                                Kategorijos
                                               </p>
                                               <ul role="list" aria-labelledby={`desktop-featured-heading-${category.id}`} className="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
                                                 {category.children.nodes.map((subCategory) => (
@@ -379,11 +385,11 @@ const Header: React.FC = () => {
 
                         <div className="flex ">
                           {session?.user?.image ?
-                            (<Image src={session.user.image} alt={session?.user?.name ?? ""} className="h-8 w-8 rounded-full" width={32} height={32} />)
+                            (<Image src={session.user.image} alt={session?.user?.name ?? ""} className="h-8 w-8 rounded-full cursor-pointer" width={32} height={32} />)
                             :
                             (<a href="/auth/signin" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
                               <span className="sr-only">Account</span>
-                              <UserIcon className="h-6 w-6" aria-hidden="true" />
+                              <UserIcon className="h-6 w-6 cursor-pointer" aria-hidden="true" />
                             </a>)}
                         </div>
                       </div>

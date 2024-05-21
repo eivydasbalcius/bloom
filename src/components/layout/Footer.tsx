@@ -16,11 +16,11 @@ interface Navigation {
 
 const navigation: Navigation = {
   main: [
-    { name: 'About', href: '#' },
-    { name: 'Privacy Policy', href: '#' },
-    { name: 'Terms & Conditions', href: '#' },
-    { name: 'Accessibility', href: '#' },
-    { name: 'Partners', href: '#' },
+    { name: 'Apie Mus', href: '#' },
+    { name: 'Privatumo Politika', href: '#' },
+    { name: 'Bendrosios Sąlygos', href: '#' },
+    { name: 'Pagalba Ir Kontaktai', href: '#' },
+    { name: 'Partnerystės programa', href: '#' },
   ],
   social: [
     {

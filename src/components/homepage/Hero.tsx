@@ -1,13 +1,23 @@
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+
 const offers = [
-  { name: "Return when you're ready", description: '60 days of free returns', href: '#' },
-  { name: 'Sign up for our newsletter', description: '15% off your first order', href: '#', scrollTo: 'sale' },
+  { name: "Grąžink prekes kai esi pasiruošęs", description: '100 dienų nemokamas grąžinimas', href: '#' },
+  { name: 'Prenumeruok naujienlaiškį', description: 'ir gauk 15% nuolaidą primam apsipirkimui', href: '#', scrollTo: 'sale' },
 ]
 
 interface HeroProps {
   onScrollToSection: (sectionId: string) => void;
 }
 
+
 const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
+  const router = useRouter();
+
+  const handleSeeProductsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push('/products');
+  }
   return (
     <div className="flex flex-col border-b border-gray-200 lg:border-0">
       <nav aria-label="Offers" className="order-last lg:order-first">
@@ -44,17 +54,17 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
             <div className="mx-auto max-w-2xl py-24 lg:max-w-none lg:py-64">
               <div className="lg:pr-16">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl xl:text-6xl">
-                  Discover Your Style
+                  Naujausios prekės kiekvinam stiliui
                 </h1>
                 <p className="mt-4 text-xl text-gray-600">
-                  Explore our latest collections and find your unique look for this season.
+                  Peržiūrėk mūsų naujausias kolekcijas ir atrask sau tinkamiausią stilių.
                 </p>
                 <div className="mt-6">
                   <a
-                    href="/collections/new-arrivals"
-                    className="inline-block rounded-md border border-transparent bg-indigo-600 px-8 py-3 font-medium text-white hover:bg-indigo-700"
+                    onClick={handleSeeProductsClick}
+                    className="inline-block rounded-md border border-transparent bg-indigo-600 px-8 py-3 font-medium text-white hover:bg-indigo-700 cursor-pointer"
                   >
-                    Shop New Arrivals
+                    Peržiūrėk naujausią kolekciją
                   </a>
                 </div>
               </div>
@@ -62,10 +72,12 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
           </div>
         </div>
         <div className="h-48 w-full sm:h-64 lg:absolute lg:right-0 lg:top-0 lg:h-full lg:w-1/2">
-          <img
+          <Image
             src="/new-arrivals-3.jpg"
             alt="Featured collection"
             className="h-full w-full object-cover object-center"
+            width={832}
+            height={777}
           />
         </div>
       </div>

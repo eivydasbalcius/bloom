@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useProductData } from "../../context/ProductDataContext";
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
-// Include the Product type definition
 interface MediaItem {
   __typename: string;
   slug: string;
@@ -90,10 +90,10 @@ const Trending: React.FC = () => {
       <div className="py-16 sm:py-24 lg:mx-auto lg:max-w-7xl lg:px-8 lg:py-32">
         <div className="flex items-center justify-between px-4 sm:px-6 lg:px-0">
           <h2 id="trending-heading" className="text-2xl font-bold tracking-tight text-gray-900">
-            Trending products
+            Populiariausios prekės
           </h2>
-          <a onClick={handleSeeProductsClick} className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block">
-            See everything
+          <a onClick={handleSeeProductsClick} className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block cursor-pointer">
+            Pamatyti viską
             <span aria-hidden="true"> &rarr;</span>
           </a>
         </div>
@@ -109,10 +109,12 @@ const Trending: React.FC = () => {
                   <Link href={`/products/${product.slug}`}>
                     <div className="group relative">
                       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200">
-                        <img
+                        <Image
                           src={product.image?.mediaItemUrl}
                           alt={product.image?.slug}
                           className="h-full w-full object-cover object-center group-hover:opacity-75"
+                          width={280}
+                          height={280}
                         />
                       </div>
                       <div className="mt-6">
@@ -134,8 +136,8 @@ const Trending: React.FC = () => {
         </div>
 
         <div className="mt-12 px-4 sm:hidden">
-          <a onClick={handleSeeProductsClick} className="text-sm font-semibold text-indigo-600 hover:text-indigo-500">
-            See everything
+          <a onClick={handleSeeProductsClick} className="text-sm font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer">
+            Pamatyk viską
             <span aria-hidden="true"> &rarr;</span>
           </a>
         </div>

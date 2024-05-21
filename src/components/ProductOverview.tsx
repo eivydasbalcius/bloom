@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { RadioGroup } from '@headlessui/react';
+import { RadioGroup } from '@headlessui/react'
+import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { StarIcon } from '@heroicons/react/20/solid';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
+import Image from 'next/image';
 
 interface MediaItem {
   __typename: string;
@@ -64,10 +67,16 @@ type ProductOverviewProps = {
   product: Product;
 };
 
+const deliveryMethods = [
+  { id: 1, title: 'Standartinis', turnaround: '3-7 Darbo dienos', price: 'Nemokamas' },
+  { id: 2, title: 'Greitasis', turnaround: '1–3 Darbo dienos', price: '15.00€' },
+]
+
 const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
+  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(deliveryMethods[0]);
 
   const getColorOptions = () => {
     const colorAttribute = product?.attributes?.nodes?.find(attr => attr.name === 'pa_color');
@@ -130,33 +139,41 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
 
         <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
           <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
-            <img
+            <Image
               src={product.image.mediaItemUrl}
               alt={product.name}
               className="h-full w-full object-cover object-center"
+              width={384}
+              height={554}
             />
           </div>
           <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
             <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-              <img
+              <Image
                 src={product.image.mediaItemUrl}
                 alt={product.name}
                 className="h-full w-full object-cover object-center"
+                width={384}
+                height={256}
               />
             </div>
             <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-              <img
+              <Image
                 src={product.image.mediaItemUrl}
                 alt={product.name}
                 className="h-full w-full object-cover object-center"
+                width={384}
+                height={256}
               />
             </div>
           </div>
           <div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
-            <img
+            <Image
               src={product.image.mediaItemUrl}
               alt={product.name}
               className="h-full w-full object-cover object-center"
+              width={384}
+              height={554}
             />
           </div>
         </div>
@@ -186,7 +203,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
                 </div>
                 <p className="sr-only">4 out of 5 stars</p>
                 <a className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                  222 reviews
+                  222 įvertinimai
                 </a>
               </div>
             </div>
@@ -195,9 +212,9 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
               {/* Colors */}
               {selectedColor && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-900">Color</h3>
+                  <h3 className="text-sm font-medium text-gray-900">Spalvos</h3>
                   <RadioGroup value={selectedColor} onChange={setSelectedColor} className="mt-4">
-                    <RadioGroup.Label className="sr-only">Choose a color</RadioGroup.Label>
+                    <RadioGroup.Label className="sr-only">Pasirinkite splavą</RadioGroup.Label>
                     <div className="flex items-center space-x-3">
                       {getColorOptions().map((color) => (
                         <RadioGroup.Option
@@ -227,9 +244,9 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
               {/* Sizes */}
               {selectedSize && (
                 <div className="mt-10">
-                  <h3 className="text-sm font-medium text-gray-900">Size</h3>
+                  <h3 className="text-sm font-medium text-gray-900">Dydžiai</h3>
                   <RadioGroup value={selectedSize} onChange={setSelectedSize} className="mt-4">
-                    <RadioGroup.Label className="sr-only">Choose a size</RadioGroup.Label>
+                    <RadioGroup.Label className="sr-only">Pasirinkite dydį</RadioGroup.Label>
                     <div className="grid grid-cols-4 gap-4">
                       {getSizeOptions().map((size) => (
                         <RadioGroup.Option
@@ -256,7 +273,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
               {/* Quantity */}
               <div className="mt-4">
                 <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-                  Quantity
+                  Kiekis
                 </label>
                 <input
                   type="number"
@@ -273,7 +290,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
                 type="submit"
                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
-                Add to bag
+                Pridėti į krepšelį
               </button>
             </form>
           </div>
@@ -282,29 +299,72 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
             <div>
               <h3 className="sr-only">Description</h3>
               <div className="space-y-6">
-                <p className="text-base text-gray-900">{product.description}</p>
+                <p className="product-description text-base text-gray-900" dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }}></p>
               </div>
             </div>
-            <div className="mt-10">
+            {/* <div className="mt-10">
               <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
               <div className="mt-4">
                 <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                  {/* {product.highlights.map((highlight) => (
+                  {product.highlights.map((highlight) => (
                     <li key={highlight} className="text-gray-400">
                       <span className="text-gray-600">{highlight}</span>
                     </li>
-                  ))} */}
+                  ))}
                 </ul>
               </div>
+            </div> */}
+            <div className="mt-10 border-t border-gray-200 pt-10">
+              <RadioGroup value={selectedDeliveryMethod} onChange={setSelectedDeliveryMethod}>
+                <RadioGroup.Label className="text-lg font-medium text-gray-900">Pristatymas</RadioGroup.Label>
+
+                <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+                  {deliveryMethods.map((deliveryMethod) => (
+                    <RadioGroup.Option
+                      key={deliveryMethod.id}
+                      value={deliveryMethod}
+                      className={({ checked, active }) =>
+                        classNames(
+                          checked ? 'border-transparent' : 'border-gray-300',
+                          active ? 'ring-2 ring-indigo-500' : '',
+                          'relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none'
+                        )
+                      }
+                    >
+                      {({ checked, active }) => (
+                        <>
+                          <span className="flex flex-1">
+                            <span className="flex flex-col">
+                              <RadioGroup.Label as="span" className="block text-sm font-medium text-gray-900">
+                                {deliveryMethod.title}
+                              </RadioGroup.Label>
+                              <RadioGroup.Description
+                                as="span"
+                                className="mt-1 flex items-center text-sm text-gray-500"
+                              >
+                                {deliveryMethod.turnaround}
+                              </RadioGroup.Description>
+                              <RadioGroup.Description as="span" className="mt-6 text-sm font-medium text-gray-900">
+                                {deliveryMethod.price}
+                              </RadioGroup.Description>
+                            </span>
+                          </span>
+                          {checked ? <CheckCircleIcon className="h-5 w-5 text-indigo-600" aria-hidden="true" /> : null}
+                          <span
+                            className={classNames(
+                              active ? 'border' : 'border-2',
+                              checked ? 'border-indigo-500' : 'border-transparent',
+                              'pointer-events-none absolute -inset-px rounded-lg'
+                            )}
+                            aria-hidden="true"
+                          />
+                        </>
+                      )}
+                    </RadioGroup.Option>
+                  ))}
+                </div>
+              </RadioGroup>
             </div>
-            <section aria-labelledby="shipping-heading" className="mt-10">
-              <h2 id="shipping-heading" className="text-sm font-medium text-gray-900">
-                Details
-              </h2>
-              <div className="mt-4 space-y-6">
-                <p className="text-sm text-gray-600">{product.slug}</p>
-              </div>
-            </section>
           </div>
         </div>
       </div>
