@@ -40,6 +40,7 @@ interface Attribute {
 interface Product {
   __typename: string;
   id: string;
+  databaseId: number;
   name: string;
   description: string;
   price: string;
@@ -93,7 +94,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
   const handleAddToCart = (e: React.FormEvent) => {
     e.preventDefault();
     const cartItem = {
-      productId: product.id,
+      productId: product.databaseId,
       name: product.name,
       price: product.price,
       image: product.image.mediaItemUrl,

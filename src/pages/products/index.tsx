@@ -10,9 +10,9 @@ const AllProducts: NextPage = () => {
     const { data, loading, error } = useQuery(PRODUCTS_WITH_CATEGORIES_QUERY);
 
 
-    // useEffect(() => {
-    //     console.log('Trending Products:', data?.products.nodes);
-    //   }, [data]); 
+    useEffect(() => {
+        console.log('All Products:', data?.products.nodes);
+      }, [data]); 
 
 
     if (loading) return <p>Loading...</p>;
