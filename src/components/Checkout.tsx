@@ -5,6 +5,7 @@ import { CheckCircleIcon, TrashIcon } from '@heroicons/react/20/solid'
 import { useSession } from "next-auth/react";
 import axios from 'axios';
 import Image from 'next/image';
+import Swal from 'sweetalert2';
 
 interface CartItem {
   productId: number;
@@ -50,6 +51,7 @@ const Checkout = () => {
   const [taxes, setTaxes] = useState(0);
   const [total, setTotal] = useState(0);
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(deliveryMethods[0]);
+  const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -105,7 +107,7 @@ const Checkout = () => {
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setLoading(true);
     const customer: Customer = {
       firstName: (document.getElementById('first-name') as HTMLInputElement).value,
       lastName: (document.getElementById('last-name') as HTMLInputElement).value,
@@ -128,7 +130,17 @@ const Checkout = () => {
         customer,
       });
       console.log('Order created successfully:', response.data);
-      // Redirect or display a success message
+
+      // Display SweetAlert on success
+      Swal.fire({
+        icon: 'success',
+        title: 'Užsakymas sėkmingai sukurtas',
+        text: 'Dėkojame už jūsų užsakymą!',
+      }).then(() => {
+        // Optionally, you can redirect the user or clear the cart here
+        router.push('/');
+      });
+
     } catch (error) {
       console.log('customer data:', customer);
       console.log('cart data:', cart);
@@ -271,9 +283,10 @@ const Checkout = () => {
                       autoComplete="country-name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     >
-                      <option>United States</option>
-                      <option>Canada</option>
-                      <option>Mexico</option>
+                      <option>Lietuva</option>
+                      <option>JAV</option>
+                      <option>Kanada</option>
+                      <option>Meksika</option>
                     </select>
                   </div>
                 </div>
@@ -477,10 +490,11 @@ const Checkout = () => {
 
           {/* Order summary */}
           <div className="mt-10 lg:mt-0">
-            <h2 className="text-lg font-medium text-gray-900">Pirkinių krepšelis</h2>
+            <h2 className="text-lg font-medium text-gray-900">Užsakymo santrauka</h2>
 
             <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
               <h3 className="sr-only">Items in your cart</h3>
+              {/* pakeisti */}
               <ul role="list" className="divide-y divide-gray-200">
                 {cart.map((product, index) => (
                   <li key={index} className="flex px-4 py-6 sm:px-6">
@@ -546,7 +560,7 @@ const Checkout = () => {
                   <dd className="text-sm font-medium text-gray-900">0,00 €</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-200 pt-6">
-                  <dt className="text-base font-medium text-black">Galutinė kaina</dt>
+                  <dt className="text-base font-medium text-black">Galutinė suma</dt>
                   <dd className="text-base font-medium text-gray-900">{total} €</dd>
                 </div>
               </dl>
@@ -554,8 +568,32 @@ const Checkout = () => {
                 <button
                   type="submit"
                   className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                  disabled={loading}
                 >
-                  Patvirtinti užsakymą
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3 text-white inline-block"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l1.707-1.707A5.978 5.978 0 0112 18a5.978 5.978 0 014.293-1.707L18 17.291A7.978 7.978 0 0012 20a7.978 7.978 0 00-6-2.709z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    'Patvirtinti užsakymą'
+                  )}
                 </button>
               </div>
             </div>
