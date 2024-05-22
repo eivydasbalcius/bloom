@@ -68,7 +68,7 @@ const Header: React.FC = () => {
   const handleCheckoutClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (session) {
-      router.push('/checkout');
+      router.push('/cart');
     } else {
       router.push('/auth/signin');
     }
@@ -399,7 +399,7 @@ const Header: React.FC = () => {
                       <div className="flow-root">
                         <a onClick={handleCheckoutClick} className="group -m-2 flex items-center p-2">
                           <ShoppingCartIcon
-                            className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                            className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500 cursor-pointer"
                             aria-hidden="true"
                           />
                           <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{cartQuantity}</span>

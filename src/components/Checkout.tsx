@@ -3,8 +3,10 @@ import { useRouter } from 'next/router';
 import { RadioGroup } from '@headlessui/react'
 import { CheckCircleIcon, TrashIcon } from '@heroicons/react/20/solid'
 import { useSession } from "next-auth/react";
+import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import Image from 'next/image';
+import Swal from 'sweetalert2';
 
 interface CartItem {
   productId: number;
@@ -31,6 +33,12 @@ interface Customer {
   phone: string;
 }
 
+interface FormData extends Customer {
+  cardNumber: string;
+  nameOnCard: string;
+  expirationDate: string;
+  cvc: string;
+}
 
 const deliveryMethods = [
   { id: 1, title: 'Standartinis', turnaround: '3-7 Darbo dienos', price: 'Nemokamas' },
@@ -50,8 +58,12 @@ const Checkout = () => {
   const [taxes, setTaxes] = useState(0);
   const [total, setTotal] = useState(0);
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(deliveryMethods[0]);
+  const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  const { register, handleSubmit, formState: { errors }, setError } = useForm<FormData>();
+
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -103,21 +115,29 @@ const Checkout = () => {
     recalculateTotals(updatedCart);
   };
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: Customer) => {
+    setLoading(true);
     const customer: Customer = {
-      firstName: (document.getElementById('first-name') as HTMLInputElement).value,
-      lastName: (document.getElementById('last-name') as HTMLInputElement).value,
-      address1: (document.getElementById('address') as HTMLInputElement).value,
-      address2: (document.getElementById('apartment') as HTMLInputElement).value,
-      city: (document.getElementById('city') as HTMLInputElement).value,
-      state: (document.getElementById('region') as HTMLInputElement).value,
-      postcode: (document.getElementById('postal-code') as HTMLInputElement).value,
-      country: (document.getElementById('country') as HTMLInputElement).value,
-      email: (document.getElementById('email-address') as HTMLInputElement).value,
-      phone: (document.getElementById('phone') as HTMLInputElement).value,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      address1: data.address1,
+      address2: data.address2,
+      city: data.city,
+      state: data.state,
+      postcode: data.postcode,
+      country: data.country,
+      email: data.email,
+      phone: data.phone,
     };
+
+    // if (!selectedDeliveryMethod) {
+    //   setError('deliveryMethod', {
+    //     type: 'manual',
+    //     message: 'Pristatymo būdas yra privalomas',
+    //   });
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       const response = await axios.post('/api/order', {
@@ -128,11 +148,24 @@ const Checkout = () => {
         customer,
       });
       console.log('Order created successfully:', response.data);
-      // Redirect or display a success message
+
+      // Display SweetAlert on success
+      Swal.fire({
+        icon: 'success',
+        title: 'Užsakymas sėkmingai sukurtas',
+        text: 'Dėkojame už jūsų užsakymą!',
+      }).then(() => {
+        // Optionally, you can redirect the user or clear the cart here
+        router.push('/');
+      });
+
     } catch (error) {
       console.log('customer data:', customer);
       console.log('cart data:', cart);
       console.error('Error creating order:', error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -146,7 +179,7 @@ const Checkout = () => {
       <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 className="sr-only">Checkout</h2>
 
-        <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16" onSubmit={handleSubmitOrder}>
+        <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <div>
               <h2 className="text-lg font-medium text-gray-900">Kontaktinė informacija</h2>
@@ -159,11 +192,12 @@ const Checkout = () => {
                   <input
                     type="email"
                     id="email-address"
-                    name="email-address"
-                    value={session?.user?.email || ''}
+                    value={session?.user?.email ?? ''}
+                    {...register('email', { required: 'Šis laukelis yra privalomas' })}
                     autoComplete="email"
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                   />
+                  {errors.email && <span className="text-red-600">{errors.email.message}</span>}
                 </div>
               </div>
             </div>
@@ -180,10 +214,11 @@ const Checkout = () => {
                     <input
                       type="text"
                       id="first-name"
-                      name="first-name"
+                      {...register('firstName', { required: 'Šis laukelis yra privalomas' })}
                       autoComplete="given-name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.firstName && <span className="text-red-600">{errors.firstName.message}</span>}
                   </div>
                 </div>
 
@@ -195,24 +230,11 @@ const Checkout = () => {
                     <input
                       type="text"
                       id="last-name"
-                      name="last-name"
+                      {...register('lastName', { required: 'Šis laukelis yra privalomas' })}
                       autoComplete="family-name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-                    Įmonės pavadinimas
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="text"
-                      name="company"
-                      id="company"
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
-                    />
+                    {errors.lastName && <span className="text-red-600">{errors.lastName.message}</span>}
                   </div>
                 </div>
 
@@ -223,11 +245,12 @@ const Checkout = () => {
                   <div className="mt-1">
                     <input
                       type="text"
-                      name="address"
                       id="address"
+                      {...register('address1', { required: 'Šis laukelis yra privalomas' })}
                       autoComplete="street-address"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.address1 && <span className="text-red-600">{errors.address1.message}</span>}
                   </div>
                 </div>
 
@@ -238,8 +261,8 @@ const Checkout = () => {
                   <div className="mt-1">
                     <input
                       type="text"
-                      name="apartment"
                       id="apartment"
+                      {...register('address2')}
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
                   </div>
@@ -252,11 +275,12 @@ const Checkout = () => {
                   <div className="mt-1">
                     <input
                       type="text"
-                      name="city"
                       id="city"
+                      {...register('city', { required: 'Šis laukelis yra privalomas' })}
                       autoComplete="address-level2"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.city && <span className="text-red-600">{errors.city.message}</span>}
                   </div>
                 </div>
 
@@ -267,14 +291,16 @@ const Checkout = () => {
                   <div className="mt-1">
                     <select
                       id="country"
-                      name="country"
+                      {...register('country', { required: 'Pasirinkite šalį' })}
                       autoComplete="country-name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     >
-                      <option>United States</option>
-                      <option>Canada</option>
-                      <option>Mexico</option>
+                      <option value="">Pasirinkite šalį</option>
+                      <option value="United States">United States</option>
+                      <option value="Canada">Canada</option>
+                      <option value="Mexico">Mexico</option>
                     </select>
+                    {errors.country && <span className="text-red-600">{errors.country.message}</span>}
                   </div>
                 </div>
 
@@ -285,8 +311,8 @@ const Checkout = () => {
                   <div className="mt-1">
                     <input
                       type="text"
-                      name="region"
                       id="region"
+                      {...register('state')}
                       autoComplete="address-level1"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
@@ -300,11 +326,12 @@ const Checkout = () => {
                   <div className="mt-1">
                     <input
                       type="text"
-                      name="postal-code"
                       id="postal-code"
+                      {...register('postcode', { required: 'Pašto kodas yra privalomas' })}
                       autoComplete="postal-code"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.postcode && <span className="text-red-600">{errors.postcode.message}</span>}
                   </div>
                 </div>
 
@@ -315,11 +342,12 @@ const Checkout = () => {
                   <div className="mt-1">
                     <input
                       type="text"
-                      name="phone"
                       id="phone"
+                      {...register('phone', { required: 'Šis laukelis yra privalomas' })}
                       autoComplete="tel"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.phone && <span className="text-red-600">{errors.phone.message}</span>}
                   </div>
                 </div>
               </div>
@@ -375,6 +403,7 @@ const Checkout = () => {
                   ))}
                 </div>
               </RadioGroup>
+              {selectedDeliveryMethod ? null : <span className="text-red-600">Pristatymo būdas yra privalomas</span>}
             </div>
 
             {/* Payment */}
@@ -420,10 +449,12 @@ const Checkout = () => {
                     <input
                       type="text"
                       id="card-number"
-                      name="card-number"
+                      {...register('cardNumber', { required: 'Kreditinės kortelės numeris yra privalomas', pattern: { value: /^\d{16}$/, message: 'Neteisingas kreditinės kortelės numeris' } })}
                       autoComplete="cc-number"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.cardNumber && <span className="text-red-600">{errors.cardNumber.message}</span>}
+
                   </div>
                 </div>
 
@@ -432,13 +463,16 @@ const Checkout = () => {
                     Vardas ir Pavardė
                   </label>
                   <div className="mt-1">
+
                     <input
                       type="text"
                       id="name-on-card"
-                      name="name-on-card"
+                      {...register('nameOnCard', { required: 'Vardas ir Pavardė yra privalomi' })}
                       autoComplete="cc-name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.nameOnCard && <span className="text-red-600">{errors.nameOnCard.message}</span>}
+
                   </div>
                 </div>
 
@@ -449,11 +483,13 @@ const Checkout = () => {
                   <div className="mt-1">
                     <input
                       type="text"
-                      name="expiration-date"
                       id="expiration-date"
+                      {...register('expirationDate', { required: 'Galiojimo data yra privaloma', pattern: { value: /^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$/, message: 'Neteisinga galiojimo data (MM/YY)' } })}
                       autoComplete="cc-exp"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.expirationDate && <span className="text-red-600">{errors.expirationDate.message}</span>}
+
                   </div>
                 </div>
 
@@ -464,11 +500,12 @@ const Checkout = () => {
                   <div className="mt-1">
                     <input
                       type="text"
-                      name="cvc"
                       id="cvc"
+                      {...register('cvc', { required: 'CVC yra privalomas', pattern: { value: /^\d{3,4}$/, message: 'Neteisingas CVC kodas' } })}
                       autoComplete="csc"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     />
+                    {errors.cvc && <span className="text-red-600">{errors.cvc.message}</span>}
                   </div>
                 </div>
               </div>
@@ -554,8 +591,32 @@ const Checkout = () => {
                 <button
                   type="submit"
                   className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                  disabled={loading}
                 >
-                  Patvirtinti užsakymą
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-5 w-5 text-white mx-auto"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    'Patvirtinti užsakymą'
+                  )}
                 </button>
               </div>
             </div>
@@ -563,7 +624,7 @@ const Checkout = () => {
         </form>
       </div>
     </div>
-  )
+  );
 };
 
 export default Checkout;

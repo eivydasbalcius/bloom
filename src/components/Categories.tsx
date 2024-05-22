@@ -125,9 +125,9 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
   }, [products, activeFilters]);
 
   const filterSections = [
-    { id: 'categories', name: 'Kategorija', options: filters?.categories?.map(cat => ({ value: cat, label: cat, checked: activeFilters.categories.includes(cat) })) },
-    { id: 'colors', name: 'Spalva', options: filters?.colors?.map(color => ({ value: color, label: color, checked: activeFilters.colors.includes(color) })) },
-    { id: 'sizes', name: 'Dydis', options: filters?.sizes?.map(size => ({ value: size, label: size, checked: activeFilters.sizes.includes(size) })) },
+    { id: 'categories', name: 'Kategorijos', options: filters?.categories?.map(cat => ({ value: cat, label: cat, checked: activeFilters.categories.includes(cat) })) },
+    { id: 'colors', name: 'Spalvos', options: filters?.colors?.map(color => ({ value: color, label: color, checked: activeFilters.colors.includes(color) })) },
+    { id: 'sizes', name: 'Dydžiai', options: filters?.sizes?.map(size => ({ value: size, label: size, checked: activeFilters.sizes.includes(size) })) },
   ];
 
   function classNames(...classes: string[]) {
