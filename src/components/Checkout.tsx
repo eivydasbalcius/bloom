@@ -62,7 +62,7 @@ const Checkout = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+  const { register, handleSubmit, formState: { errors }, setError } = useForm<FormData>();
 
 
   useEffect(() => {
@@ -130,14 +130,14 @@ const Checkout = () => {
       phone: data.phone,
     };
 
-    if (!selectedDeliveryMethod) {
-      setError('deliveryMethod', {
-        type: 'manual',
-        message: 'Pristatymo būdas yra privalomas',
-      });
-      setLoading(false);
-      return;
-    }
+    // if (!selectedDeliveryMethod) {
+    //   setError('deliveryMethod', {
+    //     type: 'manual',
+    //     message: 'Pristatymo būdas yra privalomas',
+    //   });
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       const response = await axios.post('/api/order', {
