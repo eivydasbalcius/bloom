@@ -1,75 +1,159 @@
-
-import React, { useState } from 'react'
-import { CheckIcon, ClockIcon, QuestionMarkCircleIcon, XMarkIcon as XMarkIconMini } from '@heroicons/react/20/solid'
+import React, { useState, useEffect } from 'react';
+import { CheckIcon, ClockIcon, QuestionMarkCircleIcon, XMarkIcon as XMarkIconMini } from '@heroicons/react/20/solid';
 import Image from 'next/image';
+import { useProductData } from "../context/ProductDataContext";
+import { useRouter } from 'next/router';
 
-const products = [
-  {
-    id: 1,
-    name: 'Basic Tee',
-    href: '#',
-    price: '$32.00',
-    color: 'Sienna',
-    inStock: true,
-    size: 'Large',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-01.jpg',
-    imageAlt: "Front of men's Basic Tee in sienna.",
-  },
-  {
-    id: 2,
-    name: 'Basic Tee',
-    href: '#',
-    price: '$32.00',
-    color: 'Black',
-    inStock: false,
-    leadTime: '3–4 weeks',
-    size: 'Large',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-02.jpg',
-    imageAlt: "Front of men's Basic Tee in black.",
-  },
-  {
-    id: 3,
-    name: 'Nomad Tumbler',
-    href: '#',
-    price: '$35.00',
-    color: 'White',
-    inStock: true,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-03.jpg',
-    imageAlt: 'Insulated bottle with white base and black snap lid.',
-  },
-]
-const relatedProducts = [
-  {
-    id: 1,
-    name: 'Billfold Wallet',
-    href: '#',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-related-product-01.jpg',
-    imageAlt: 'Front of Billfold Wallet in natural leather.',
-    price: '$118',
-    color: 'Natural',
-  },
-  // More products...
-]
+interface CartItem {
+  productId: number;
+  quantity: number;
+  price: number;
+  image: string;
+  name: string;
+  attributes: {
+    color: string | null;
+    size: string | null;
+  };
+}
+interface MediaItem {
+  __typename: string;
+  slug: string;
+  mediaItemUrl: string;
+}
+
+interface ProductTag {
+  __typename: string;
+  name: string;
+  slug: string;
+}
+
+interface ProductCategory {
+  __typename: string;
+  id: string;
+  name: string;
+  slug: string;
+  parentId: string | null;
+  image: MediaItem | null;
+}
+
+interface TermNode {
+  __typename: string;
+  id: string;
+  name: string;
+  count: number;
+  slug: string;
+}
+
+interface Attribute {
+  __typename: string;
+  id: string;
+  attributeId: number;
+  name: string;
+  label: string;
+  options: string[];
+  terms: {
+    __typename: string;
+    nodes: TermNode[];
+  };
+}
+
+interface Product {
+  __typename: string;
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  slug: string;
+  image: MediaItem;
+  productTags: {
+    __typename: string;
+    nodes: ProductTag[];
+  };
+  productCategories: {
+    __typename: string;
+    nodes: ProductCategory[];
+  };
+  attributes: {
+    __typename: string;
+    nodes: Attribute[] | null;
+  };
+}
 
 export default function ShoppingCart() {
+  const { products } = useProductData();
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [taxes, setTaxes] = useState(0);
+  const [total, setTotal] = useState(0);
+  const router = useRouter();
+
+  useEffect(() => {
+    const cartData = sessionStorage.getItem('cart');
+    const parsedCartData: CartItem[] = cartData ? JSON.parse(cartData) : [];
+    setCart(parsedCartData);
+    recalculateTotals(parsedCartData);
+  }, []);
+
+  const recalculateTotals = (cart: CartItem[]) => {
+    const subTotal = cart.reduce((acc: number, item: CartItem) => acc + item.price * item.quantity, 0);
+    const tax = subTotal * 0.092;
+    const totalAmount = subTotal + tax;
+
+    setSubtotal(parseFloat(subTotal.toFixed(2)));
+    setTaxes(parseFloat(tax.toFixed(2)));
+    setTotal(parseFloat(totalAmount.toFixed(2)));
+  };
+
+  const handleQuantityChange = (index: number, quantity: number) => {
+    const updatedCart = cart.map((item, i) =>
+      i === index ? { ...item, quantity } : item
+    );
+    setCart(updatedCart);
+    sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+
+    // Recalculate totals
+    recalculateTotals(updatedCart);
+
+    // Dispatch custom event to update cart quantity in Header
+    const event = new CustomEvent('cart-updated');
+    window.dispatchEvent(event);
+  };
+
+  const handleRemoveItem = (index: number) => {
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
+    sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+    recalculateTotals(updatedCart);
+  };
+
+  const trendingProducts: Product[] = products.filter((product: Product) =>
+    product?.productTags?.nodes.some(tag => tag.slug.toLowerCase() === 'trending-cart')
+  );
+
+  const handleCheckoutButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push('/checkout');
+
+  };
+
   return (
     <>
-      <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Shopping Cart</h1>
+      <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Jūsų pirkinių krepšelis</h1>
 
         <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <section aria-labelledby="cart-heading" className="lg:col-span-7">
             <h2 id="cart-heading" className="sr-only">
-              Items in your shopping cart
+              Krepšelyje esančios prekės
             </h2>
 
             <ul role="list" className="divide-y divide-gray-200 border-b border-t border-gray-200">
-              {products.map((product, productIdx) => (
-                <li key={product.id} className="flex py-6 sm:py-10">
+              {cart.map((product, productIdx) => (
+                <li key={product.productId} className="flex py-6 sm:py-10">
                   <div className="flex-shrink-0">
                     <Image
-                      src={product.imageSrc}
-                      alt={product.imageAlt}
+                      src={product.image}
+                      alt={product.name}
                       className="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
                       width={192}
                       height={192}
@@ -81,49 +165,46 @@ export default function ShoppingCart() {
                       <div>
                         <div className="flex justify-between">
                           <h3 className="text-sm">
-                            <a href={product.href} className="font-medium text-gray-700 hover:text-gray-800">
+                            <a href="#" className="font-medium text-gray-700 hover:text-gray-800">
                               {product.name}
                             </a>
                           </h3>
                         </div>
                         <div className="mt-1 flex text-sm">
-                          <p className="text-gray-500">{product.color}</p>
-                          {product.size ? (
-                            <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500">{product.size}</p>
+                          <p className="text-gray-500">{product.attributes.color}</p>
+                          {product.attributes.size ? (
+                            <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500">{product.attributes.size}</p>
                           ) : null}
                         </div>
-                        <p className="mt-1 text-sm font-medium text-gray-900">{product.price}</p>
+                        <p className="mt-1 text-sm font-medium text-gray-900">{product.price} €</p>
                       </div>
 
                       <div className="mt-4 sm:mt-0 sm:pr-9">
                         <label htmlFor={`quantity-${productIdx}`} className="sr-only">
-                          Quantity, {product.name}
+                          Kiekis, {product.name}
                         </label>
                         <select
                           id={`quantity-${productIdx}`}
                           name={`quantity-${productIdx}`}
+                          value={product.quantity}
+                          onChange={(e) => handleQuantityChange(productIdx, parseInt(e.target.value))}
                           className="max-w-full rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                         >
-                          <option value={1}>1</option>
-                          <option value={2}>2</option>
-                          <option value={3}>3</option>
-                          <option value={4}>4</option>
-                          <option value={5}>5</option>
-                          <option value={6}>6</option>
-                          <option value={7}>7</option>
-                          <option value={8}>8</option>
+                          {[...Array(10)].map((_, i) => (
+                            <option key={i} value={i + 1}>{i + 1}</option>
+                          ))}
                         </select>
 
                         <div className="absolute right-0 top-0">
-                          <button type="button" className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500">
-                            <span className="sr-only">Remove</span>
+                          <button type="button" className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500" onClick={() => handleRemoveItem(productIdx)}>
+                            <span className="sr-only">Ištrinti</span>
                             <XMarkIconMini className="h-5 w-5" aria-hidden="true" />
                           </button>
                         </div>
                       </div>
                     </div>
 
-                    <p className="mt-4 flex space-x-2 text-sm text-gray-700">
+                    {/* <p className="mt-4 flex space-x-2 text-sm text-gray-700">
                       {product.inStock ? (
                         <CheckIcon className="h-5 w-5 flex-shrink-0 text-green-500" aria-hidden="true" />
                       ) : (
@@ -131,7 +212,7 @@ export default function ShoppingCart() {
                       )}
 
                       <span>{product.inStock ? 'In stock' : `Ships in ${product.leadTime}`}</span>
-                    </p>
+                    </p> */}
                   </div>
                 </li>
               ))}
@@ -144,46 +225,37 @@ export default function ShoppingCart() {
             className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8"
           >
             <h2 id="summary-heading" className="text-lg font-medium text-gray-900">
-              Order summary
+              Užsakymo santrauka
             </h2>
 
             <dl className="mt-6 space-y-4">
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-600">Subtotal</dt>
-                <dd className="text-sm font-medium text-gray-900">$99.00</dd>
-              </div>
-              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                <dt className="flex items-center text-sm text-gray-600">
-                  <span>Shipping estimate</span>
-                  <a href="#" className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500">
-                    <span className="sr-only">Learn more about how shipping is calculated</span>
-                    <QuestionMarkCircleIcon className="h-5 w-5" aria-hidden="true" />
-                  </a>
-                </dt>
-                <dd className="text-sm font-medium text-gray-900">$5.00</dd>
+                <dt className="text-sm text-gray-600">Tarpinė suma</dt>
+                <dd className="text-sm font-medium text-gray-900">{subtotal} €</dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <dt className="flex text-sm text-gray-600">
-                  <span>Tax estimate</span>
+                  <span>Mokesčiai</span>
                   <a href="#" className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500">
                     <span className="sr-only">Learn more about how tax is calculated</span>
                     <QuestionMarkCircleIcon className="h-5 w-5" aria-hidden="true" />
                   </a>
                 </dt>
-                <dd className="text-sm font-medium text-gray-900">$8.32</dd>
+                <dd className="text-sm font-medium text-gray-900">{taxes} €</dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                <dt className="text-base font-medium text-gray-900">Order total</dt>
-                <dd className="text-base font-medium text-gray-900">$112.32</dd>
+                <dt className="text-base font-medium text-gray-900">Galutinė suma</dt>
+                <dd className="text-base font-medium text-gray-900">{total} €</dd>
               </div>
             </dl>
 
             <div className="mt-6">
               <button
+                onClick={handleCheckoutButtonClick}
                 type="submit"
                 className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
               >
-                Checkout
+                Tęsti apsipirkimą
               </button>
             </div>
           </section>
@@ -192,16 +264,16 @@ export default function ShoppingCart() {
         {/* Related products */}
         <section aria-labelledby="related-heading" className="mt-24">
           <h2 id="related-heading" className="text-lg font-medium text-gray-900">
-            You may also like&hellip;
+            Žmonės taip pat perka
           </h2>
 
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {relatedProducts.map((relatedProduct) => (
-              <div key={relatedProduct.id} className="group relative">
+            {trendingProducts?.map((product: Product) => (
+              <div key={product.id} className="group relative">
                 <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md lg:aspect-none group-hover:opacity-75 lg:h-80">
                   <Image
-                    src={relatedProduct.imageSrc}
-                    alt={relatedProduct.imageAlt}
+                    src={product.image?.mediaItemUrl}
+                    alt={product.image?.slug}
                     className="h-full w-full object-cover object-center lg:h-full lg:w-full"
                     width={280}
                     height={380}
@@ -210,21 +282,19 @@ export default function ShoppingCart() {
                 <div className="mt-4 flex justify-between">
                   <div>
                     <h3 className="text-sm text-gray-700">
-                      <a href={relatedProduct.href}>
+                      <a href={`/products/${product.slug}`}>
                         <span aria-hidden="true" className="absolute inset-0" />
-                        {relatedProduct.name}
+                        {product.name}
                       </a>
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">{relatedProduct.color}</p>
                   </div>
-                  <p className="text-sm font-medium text-gray-900">{relatedProduct.price}</p>
+                  <p className="text-sm font-medium text-gray-900">{product.price} €</p>
                 </div>
               </div>
             ))}
           </div>
         </section>
-      </main>
-
+      </div>
     </>
   );
 }

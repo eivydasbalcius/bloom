@@ -73,7 +73,7 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
         </div>
         <div className="h-48 w-full sm:h-64 lg:absolute lg:right-0 lg:top-0 lg:h-full lg:w-1/2">
           <Image
-            src="/jpeg-optimizer_new-arrivals-3.jpg"
+            src="/new-arrivals-3.jpg"
             alt="Featured collection"
             className="h-full w-full object-cover object-center"
             width={832}
