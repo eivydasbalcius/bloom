@@ -22,6 +22,7 @@ interface Product {
   name: string;
   price: string;
   slug: string;
+  __typename: string;
   image: {
     mediaItemUrl: string;
   };
@@ -115,12 +116,17 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
 
   useEffect(() => {
     const filtered = products.filter(product => {
+      const isVariableProduct = product.__typename === "VariableProduct";
+      if (isVariableProduct) return false; // Exclude VariableProduct
+
       const categoryMatch = !activeFilters?.categories?.length || product?.productCategories?.nodes?.some(cat => activeFilters.categories.includes(cat.name));
       const colorMatch = !activeFilters?.colors?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_color' && attr.terms.nodes.some(term => activeFilters.colors.includes(term.name)));
       const sizeMatch = !activeFilters?.sizes?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_size' && attr.terms.nodes.some(term => activeFilters.sizes.includes(term.name)));
+
       return categoryMatch && colorMatch && sizeMatch;
     });
 
+    console.log('Filtered products:', filtered);
     setDisplayedProducts(filtered);
   }, [products, activeFilters]);
 
@@ -159,7 +165,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
                 className="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden"
                 onClick={() => setMobileFiltersOpen(true)}
               >
-              Filtrai
+                Filtrai
               </button>
 
               <div className="hidden sm:block">
@@ -219,7 +225,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
           <div className="bg-gray-100">
             <div className="mx-auto max-w-7xl px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
               <h3 className="text-sm font-medium text-gray-500">
-              Pasirinkti filtrai:
+                Pasirinkti filtrai:
                 <span className="sr-only">, active</span>
               </h3>
 
@@ -257,19 +263,21 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
           <h2 id="products-heading" className="sr-only">Products</h2>
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
             {displayedProducts.map((product) => (
-              <a key={product.id} href={`/products/${product.slug}`} className="group">
-                <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
-                  <Image
-                    src={product?.image?.mediaItemUrl}
-                    alt={product?.name}
-                    className="h-full w-full object-cover object-center group-hover:opacity-75"
-                    width={280}
-                    height={320}
-                  />
-                </div>
-                <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
-                <p className="mt-1 text-lg font-medium text-gray-900">{product.price} €</p>
-              </a>
+              product.slug !== "light-brown-bag" && (
+                <a key={product.id} href={`/products/${product.slug}`} className="group">
+                  <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
+                    <Image
+                      src={product?.image?.mediaItemUrl}
+                      alt={product?.name}
+                      className="h-full w-full object-cover object-center group-hover:opacity-75"
+                      width={280}
+                      height={320}
+                    />
+                  </div>
+                  <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
+                  <p className="mt-1 text-lg font-medium text-gray-900">{product.price} €</p>
+                </a>
+              )
             ))}
           </div>
         </section>

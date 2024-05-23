@@ -155,8 +155,10 @@ const Checkout = () => {
         title: 'Užsakymas sėkmingai sukurtas',
         text: 'Dėkojame už jūsų užsakymą!',
       }).then(() => {
-        // Optionally, you can redirect the user or clear the cart here
+        sessionStorage.removeItem('cart');
+        setCart([]);
         router.push('/');
+        router.replace(router.asPath);
       });
 
     } catch (error) {
@@ -195,6 +197,7 @@ const Checkout = () => {
                     value={session?.user?.email ?? ''}
                     {...register('email', { required: 'Šis laukelis yra privalomas' })}
                     autoComplete="email"
+                    disabled={true}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                   />
                   {errors.email && <span className="text-red-600">{errors.email.message}</span>}

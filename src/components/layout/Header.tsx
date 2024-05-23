@@ -376,12 +376,12 @@ const Header: React.FC = () => {
                   <div className="flex flex-1 items-center justify-end">
                     <div className="flex items-center lg:ml-8">
                       <div className="flex space-x-8 items-center">
-                        <div className="hidden lg:flex">
+                        {/* <div className="hidden lg:flex">
                           <a href="#" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
                             <span className="sr-only">Search</span>
                             <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
                           </a>
-                        </div>
+                        </div> */}
 
                         <div className="flex ">
                           {session?.user?.image ?
