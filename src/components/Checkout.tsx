@@ -194,10 +194,10 @@ const Checkout = () => {
                   <input
                     type="email"
                     id="email-address"
-                    value={session?.user?.email ?? ''}
+                    value={session?.user?.email || ''}
                     {...register('email', { required: 'Šis laukelis yra privalomas' })}
                     autoComplete="email"
-                    disabled={true}
+                    // disabled={true}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                   />
                   {errors.email && <span className="text-red-600">{errors.email.message}</span>}
@@ -299,9 +299,56 @@ const Checkout = () => {
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-700"
                     >
                       <option value="">Pasirinkite šalį</option>
-                      <option value="United States">United States</option>
-                      <option value="Canada">Canada</option>
-                      <option value="Mexico">Mexico</option>
+                      <option value="Albania">Albanija</option>
+                      <option value="Andorra">Andora</option>
+                      <option value="Armenia">Armėnija</option>
+                      <option value="Austria">Austrija</option>
+                      <option value="Azerbaijan">Azerbaidžanas</option>
+                      <option value="Belarus">Baltarusija</option>
+                      <option value="Belgium">Belgija</option>
+                      <option value="Bosnia and Herzegovina">Bosnija ir Hercegovina</option>
+                      <option value="Bulgaria">Bulgarija</option>
+                      <option value="Croatia">Kroatija</option>
+                      <option value="Cyprus">Kipras</option>
+                      <option value="Czech Republic">Čekija</option>
+                      <option value="Denmark">Danija</option>
+                      <option value="Estonia">Estija</option>
+                      <option value="Finland">Suomija</option>
+                      <option value="France">Prancūzija</option>
+                      <option value="Georgia">Gruzija</option>
+                      <option value="Germany">Vokietija</option>
+                      <option value="Greece">Graikija</option>
+                      <option value="Hungary">Vengrija</option>
+                      <option value="Iceland">Islandija</option>
+                      <option value="Ireland">Airija</option>
+                      <option value="Italy">Italija</option>
+                      <option value="Kazakhstan">Kazachstanas</option>
+                      <option value="Kosovo">Kosovas</option>
+                      <option value="Latvia">Latvija</option>
+                      <option value="Liechtenstein">Lichtenšteinas</option>
+                      <option value="Lithuania">Lietuva</option>
+                      <option value="Luxembourg">Liuksemburgas</option>
+                      <option value="Malta">Malta</option>
+                      <option value="Moldova">Moldova</option>
+                      <option value="Monaco">Monakas</option>
+                      <option value="Montenegro">Juodkalnija</option>
+                      <option value="Netherlands">Nyderlandai</option>
+                      <option value="North Macedonia">Šiaurės Makedonija</option>
+                      <option value="Norway">Norvegija</option>
+                      <option value="Poland">Lenkija</option>
+                      <option value="Portugal">Portugalija</option>
+                      <option value="Romania">Rumunija</option>
+                      <option value="San Marino">San Marinas</option>
+                      <option value="Serbia">Serbija</option>
+                      <option value="Slovakia">Slovakija</option>
+                      <option value="Slovenia">Slovėnija</option>
+                      <option value="Spain">Ispanija</option>
+                      <option value="Sweden">Švedija</option>
+                      <option value="Switzerland">Šveicarija</option>
+                      <option value="Turkey">Turkija</option>
+                      <option value="Ukraine">Ukraina</option>
+                      <option value="United Kingdom">Jungtinė Karalystė</option>
+                      <option value="Vatican City">Vatikano Miestas</option>
                     </select>
                     {errors.country && <span className="text-red-600">{errors.country.message}</span>}
                   </div>
