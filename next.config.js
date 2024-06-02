@@ -9,8 +9,17 @@ module.exports = {
         port: "",
         pathname: "/a/*",
       },
+      {
+        protocol: "https",
+        hostname: "blueviolet-antelope-713639.hostingersite.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "tailwindui.com",
+        port: "",
+      },
     ],
-    domains: ["tailwindui.com", "blueviolet-antelope-713639.hostingersite.com"],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },

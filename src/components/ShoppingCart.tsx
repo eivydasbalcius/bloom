@@ -85,6 +85,7 @@ export default function ShoppingCart() {
   const [subtotal, setSubtotal] = useState(0);
   const [taxes, setTaxes] = useState(0);
   const [total, setTotal] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const router = useRouter();
 
   useEffect(() => {
@@ -98,10 +99,12 @@ export default function ShoppingCart() {
     const subTotal = cart.reduce((acc: number, item: CartItem) => acc + item.price * item.quantity, 0);
     const tax = subTotal * 0.092;
     const totalAmount = subTotal + tax;
+    const quantity = cart.reduce((acc: number, item: CartItem) => acc + item.quantity, 0);
 
     setSubtotal(parseFloat(subTotal.toFixed(2)));
     setTaxes(parseFloat(tax.toFixed(2)));
     setTotal(parseFloat(totalAmount.toFixed(2)));
+    setQuantity(quantity);
   };
 
   const handleQuantityChange = (index: number, quantity: number) => {
@@ -230,7 +233,7 @@ export default function ShoppingCart() {
 
             <dl className="mt-6 space-y-4">
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-600">Tarpinė suma</dt>
+                <dt className="text-sm text-gray-600">Produktų kaina x{quantity}</dt>
                 <dd className="text-sm font-medium text-gray-900">{subtotal} €</dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">

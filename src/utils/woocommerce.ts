@@ -7,4 +7,14 @@ const api = new WooCommerceRestApi({
     version: "wc/v3",
 });
 
+export const fetchOrders = async () => {
+    try {
+        const response = await api.get('orders');
+        return response.data;
+    } catch (error: any) {
+        console.error('Error fetching orders:', error.response?.data || error.message);
+        return [];
+    }
+};
+
 export default api;
