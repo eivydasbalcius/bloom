@@ -68,11 +68,7 @@ const Header: React.FC = () => {
 
   const handleCheckoutClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (session) {
-      router.push('/cart');
-    } else {
-      router.push('/auth/signin');
-    }
+    router.push('/cart');
   };
 
   function classNames(...classes: string[]) {
