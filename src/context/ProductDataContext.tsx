@@ -1,10 +1,9 @@
 import { createContext, useContext, ReactNode, FunctionComponent } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, gql } from '@apollo/client';
 import apolloClient from "../lib/apollo-client";
 import { CATEGORIES_QUERY, PRODUCTS_WITH_CATEGORIES_QUERY } from '../gql/queries';
-import { ProductDataContextValue } from './types';
 
-const ProductDataContext = createContext<ProductDataContextValue | undefined>(undefined);
+const ProductDataContext = createContext<any>(null);
 
 interface ProductDataProviderProps {
   children: ReactNode;
@@ -27,7 +26,7 @@ export const ProductDataProvider: FunctionComponent<ProductDataProviderProps> = 
   if (categoryError) return <p>Error loading categories: {categoryError.message}</p>;
   if (productError) return <p>Error loading products: {productError.message}</p>;
 
-  const combinedData: ProductDataContextValue = {
+  const combinedData = {
     categories: categoryData?.productCategories.nodes,
     products: productData?.products.nodes,
   };
@@ -39,10 +38,4 @@ export const ProductDataProvider: FunctionComponent<ProductDataProviderProps> = 
   );
 };
 
-export const useProductData = () => {
-  const context = useContext(ProductDataContext);
-  if (context === undefined) {
-    throw new Error('useProductData must be used within a ProductDataProvider');
-  }
-  return context;
-};
+export const useProductData = () => useContext(ProductDataContext);
