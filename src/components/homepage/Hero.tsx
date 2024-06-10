@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const offers = [
@@ -28,7 +29,7 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
           >
             {offers.map((offer) => (
               <li key={offer.name} className="flex flex-col">
-                <a
+                <Link
                   href={offer.href}
                   className="relative flex flex-1 flex-col justify-center bg-white px-4 py-6 text-center focus:z-10"
                   onClick={(e) => {
@@ -40,7 +41,7 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
                 >
                   <p className="text-sm text-gray-500">{offer.name}</p>
                   <p className="font-semibold text-gray-900">{offer.description}</p>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -60,12 +61,14 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
                   Peržiūrėk mūsų naujausias kolekcijas ir atrask sau tinkamiausią stilių.
                 </p>
                 <div className="mt-6">
-                  <a
-                    onClick={handleSeeProductsClick}
-                    className="inline-block rounded-md border border-transparent bg-indigo-600 px-8 py-3 font-medium text-white hover:bg-indigo-700 cursor-pointer"
-                  >
-                    Peržiūrėk naujausią kolekciją
-                  </a>
+                  <Link href="/products">
+                    <div
+                      onClick={handleSeeProductsClick}
+                      className="inline-block rounded-md border border-transparent bg-indigo-600 px-8 py-3 font-medium text-white hover:bg-indigo-700 cursor-pointer"
+                    >
+                      Peržiūrėk naujausią kolekciją
+                    </div>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -73,7 +76,7 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSection }) => {
         </div>
         <div className="h-48 w-full sm:h-64 lg:absolute lg:right-0 lg:top-0 lg:h-full lg:w-1/2">
           <Image
-            src="/new-arrivals-3.jpg"
+            src="/jpeg-optimizer_new-arrivals-3.jpg"
             alt="Featured collection"
             className="h-full w-full object-cover object-center"
             width={832}

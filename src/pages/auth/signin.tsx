@@ -15,11 +15,11 @@ export default function SignIn({ providers }: SignInProps) {
   const { callbackUrl } = router.query;
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gradient-to-br from-[#d0ebff] via-[#fefff0] to-[#d0ebff]">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
 
         <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account to continue
+          Prisijunkite naudodami vieną iš socialinio tinklo paskyrų
         </h2>
       </div>
 
@@ -105,7 +105,7 @@ export default function SignIn({ providers }: SignInProps) {
               width={100}
               height={100}
             />
-            <span className="mt-6 text-center text-2xl font-medium leading-9 tracking-tight text-gray-900">Use secure Sign in</span>
+            <span className="mt-6 text-center text-2xl font-medium leading-9 tracking-tight text-gray-900">Saugus prisijungimo būdas</span>
             <div className="mt-6 flex flex-col gap-4">
               <button
                 onClick={() => signIn('google', { callbackUrl: callbackUrl as string || '/' })}

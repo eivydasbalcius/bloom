@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import Image from 'next/image';
 import Swal from 'sweetalert2';
+import Link from 'next/link';
 
 interface CartItem {
   productId: number;
@@ -115,6 +116,7 @@ const Checkout = () => {
     recalculateTotals(updatedCart);
   };
 
+
   const onSubmit = async (data: Customer) => {
     setLoading(true);
     const customer: Customer = {
@@ -130,46 +132,41 @@ const Checkout = () => {
       phone: data.phone,
     };
 
-    // if (!selectedDeliveryMethod) {
-    //   setError('deliveryMethod', {
-    //     type: 'manual',
-    //     message: 'Pristatymo būdas yra privalomas',
-    //   });
-    //   setLoading(false);
-    //   return;
-    // }
-
     try {
       const response = await axios.post('/api/order', {
         cart: cart.map(item => ({
-          id: item.productId, // Ensure this is the correct product ID
+          id: item.productId,
           quantity: item.quantity,
         })),
         customer,
       });
       console.log('Order created successfully:', response.data);
 
+      // Store purchased products in session storage
+      sessionStorage.setItem('purchasedProducts', JSON.stringify(cart));
+      sessionStorage.setItem('customerData', JSON.stringify(customer));
+      router.push('/thank-you');
+
+
       // Display SweetAlert on success
-      Swal.fire({
-        icon: 'success',
-        title: 'Užsakymas sėkmingai sukurtas',
-        text: 'Dėkojame už jūsų užsakymą!',
-      }).then(() => {
-        sessionStorage.removeItem('cart');
-        setCart([]);
-        router.push('/');
-        router.replace(router.asPath);
-      });
+      // Swal.fire({
+      //   icon: 'success',
+      //   title: 'Užsakymas sėkmingai sukurtas',
+      //   text: 'Dėkojame už jūsų užsakymą!',
+      // }).then(() => {
+      //   sessionStorage.removeItem('cart');
+      //   setCart([]);
+      // });
 
     } catch (error) {
       console.log('customer data:', customer);
       console.log('cart data:', cart);
       console.error('Error creating order:', error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
+
 
 
   if (status === 'loading' || status === 'unauthenticated') {
@@ -578,6 +575,7 @@ const Checkout = () => {
                       <div className="flex">
                         <div className="min-w-0 flex-1">
                           <h4 className="text-sm">
+                            
                             <a className="font-medium text-gray-700 hover:text-gray-800">
                               {product.name}
                             </a>

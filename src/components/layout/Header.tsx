@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useProductData } from '@/context/ProductDataContext';
 import { useRouter } from 'next/router';
 import logo from "../../../public/bloom.jpeg";
+import Link from 'next/link';
 
 const currencies = ['EUR', 'CAD', 'USD', 'AUD', 'GBP'];
 
@@ -154,9 +155,9 @@ const Header: React.FC = () => {
                               >
                                 {category.children.nodes.map((item) => (
                                   <li key={item.name} className="flex">
-                                    <a href={item.slug} className="text-gray-500">
+                                    <Link href={item.slug} className="text-gray-500">
                                       {item.name}
-                                    </a>
+                                    </Link>
                                   </li>
                                 ))}
                               </ul>
@@ -171,28 +172,30 @@ const Header: React.FC = () => {
                 {/* <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   {navigation.pages.map((page) => (
                     <div key={page.name} className="flow-root">
-                      <a href={page.href} className="-m-2 block p-2 font-medium text-gray-900">
+                      <Link href={page.href} className="-m-2 block p-2 font-medium text-gray-900">
                         {page.name}
-                      </a>
+                      </Link>
                     </div>
                   ))}
                 </div> */}
 
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   {/* <div className="flow-root">
-                    <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
+                    <Link href="#" className="-m-2 block p-2 font-medium text-gray-900">
                       Create an account
-                    </a>
+                    </Link>
                   </div> */}
                   <div className="flow-root">
                     {session ? (
-                      <a onClick={() => signOut()} className="-m-2 block p-2 font-medium text-gray-900">
+
+                      <button onClick={() => signOut()} className="-m-2 block p-2 font-medium text-gray-900">
                         Atsijungti
-                      </a>
+                      </button>
+
                     ) : (
-                      <a href="/auth/signin" className="-m-2 block p-2 font-medium text-gray-900">
+                      <Link href="/auth/signin" className="-m-2 block p-2 font-medium text-gray-900">
                         Prisijungti
-                      </a>
+                      </Link>
                     )}
                   </div>
                 </div>
@@ -261,9 +264,9 @@ const Header: React.FC = () => {
                     Atsijungti
                   </button>
                 ) : (
-                  <a href="/auth/signin" className="text-sm font-medium text-white hover:text-gray-100">
+                  <Link href="/auth/signin" className="text-sm font-medium text-white hover:text-gray-100">
                     Prisijungti
-                  </a>
+                  </Link>
                 )}
               </div>
             </div>
@@ -274,16 +277,18 @@ const Header: React.FC = () => {
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                   <div className="hidden lg:flex lg:items-center">
-                    <a onClick={handleLogoClick}>
-                      <span className="sr-only">Your Company</span>
-                      <Image
-                        className="h-8 w-auto cursor-pointer"
-                        src={logo}
-                        alt=""
-                        width={100}
-                        height={100}
-                      />
-                    </a>
+                    <Link href="/">
+                      <div onClick={handleLogoClick}>
+                        <span className="sr-only">Your Company</span>
+                        <Image
+                          className="h-8 w-auto cursor-pointer"
+                          src={logo}
+                          alt=""
+                          width={100}
+                          height={100}
+                        />
+                      </div>
+                    </Link>
                   </div>
 
                   <div className="hidden h-full lg:flex">
@@ -326,9 +331,9 @@ const Header: React.FC = () => {
                                               <ul role="list" aria-labelledby={`desktop-featured-heading-${category.id}`} className="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
                                                 {category.children.nodes.map((subCategory) => (
                                                   <li key={subCategory.id} className="flex">
-                                                    <a href="#" className="hover:text-gray-800">
+                                                    <Link href="#" className="hover:text-gray-800">
                                                       {subCategory.name}
-                                                    </a>
+                                                    </Link>
                                                   </li>
                                                 ))}
                                               </ul>
@@ -356,55 +361,59 @@ const Header: React.FC = () => {
                       <span className="sr-only">Open menu</span>
                       <Bars3Icon className="h-6 w-6" aria-hidden="true" />
                     </button>
-                    <a href="#" className="ml-2 p-2 text-gray-400 hover:text-gray-500">
+                    <Link href="#" className="ml-2 p-2 text-gray-400 hover:text-gray-500">
                       <span className="sr-only">Search</span>
                       <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
-                    </a>
+                    </Link>
                   </div>
 
-                  <a onClick={handleLogoClick} className="lg:hidden">
-                    <span className="sr-only">Your Company</span>
-                    <Image
-                      src={logo}
-                      alt=""
-                      className="h-8 w-auto"
-                      width={100}
-                      height={100}
-                    />
-                  </a>
+                  <Link href="/">
+                    <div onClick={handleLogoClick} className="lg:hidden">
+                      <span className="sr-only">Your Company</span>
+                      <Image
+                        src={logo}
+                        alt=""
+                        className="h-8 w-auto"
+                        width={100}
+                        height={100}
+                      />
+                    </div>
+                  </Link>
 
                   <div className="flex flex-1 items-center justify-end">
                     <div className="flex items-center lg:ml-8">
                       <div className="flex space-x-8 items-center">
                         {/* <div className="hidden lg:flex">
-                          <a href="#" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
+                          <Link href="#" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
                             <span className="sr-only">Search</span>
                             <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
-                          </a>
+                          </Link>
                         </div> */}
 
                         <div className="flex ">
                           {session?.user?.image ?
                             (<Image src={session.user.image} alt={session?.user?.name ?? ""} className="h-8 w-8 rounded-full cursor-pointer" width={32} height={32} />)
                             :
-                            (<a href="/auth/signin" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
+                            (<Link href="/auth/signin" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
                               <span className="sr-only">Account</span>
                               <UserIcon className="h-6 w-6 cursor-pointer" aria-hidden="true" />
-                            </a>)}
+                            </Link>)}
                         </div>
                       </div>
 
                       <span className="mx-4 h-6 w-px bg-gray-200 lg:mx-6" aria-hidden="true" />
 
                       <div className="flow-root">
-                        <a onClick={handleCheckoutClick} className="group -m-2 flex items-center p-2">
-                          <ShoppingCartIcon
-                            className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500 cursor-pointer"
-                            aria-hidden="true"
-                          />
-                          <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{cartQuantity}</span>
-                          <span className="sr-only">items in cart, view bag</span>
-                        </a>
+                        <Link href={session ? "/cart" : "/auth/signin"}>
+                          <div onClick={handleCheckoutClick} className="group -m-2 flex items-center p-2">
+                            <ShoppingCartIcon
+                              className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500 cursor-pointer"
+                              aria-hidden="true"
+                            />
+                            <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{cartQuantity}</span>
+                            <span className="sr-only">items in cart, view bag</span>
+                          </div>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -413,7 +422,7 @@ const Header: React.FC = () => {
             </div>
           </div>
         </nav>
-      </header>
+      </header >
     </>
   );
 };

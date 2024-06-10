@@ -7,7 +7,6 @@ const ProductDetail = () => {
   const router = useRouter();
   const { slug } = router.query;
 
-  // Fetch product data based on slug
   const { data, loading, error } = useQuery(GET_PRODUCT_BY_SLUG, {
     variables: { slug },
   });
@@ -17,7 +16,6 @@ const ProductDetail = () => {
 
   const product = data?.product;
 
-  // Product might not immediately be available due to async nature of data fetching
   if (!product) return <p>No product found</p>;
 
   return (

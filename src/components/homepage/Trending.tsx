@@ -81,9 +81,6 @@ const Trending: React.FC = () => {
     product?.productTags?.nodes.some(tag => tag.slug.toLowerCase() === 'trending')
   );
 
-  useEffect(() => {
-    console.log('Trending Products:', trendingProducts);
-  }, [trendingProducts]);
 
   return (
     <section aria-labelledby="trending-heading" className="bg-white">
@@ -92,10 +89,12 @@ const Trending: React.FC = () => {
           <h2 id="trending-heading" className="text-2xl font-bold tracking-tight text-gray-900">
             Populiariausios prekės
           </h2>
-          <a onClick={handleSeeProductsClick} className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block cursor-pointer">
-            Pamatyti viską
-            <span aria-hidden="true"> &rarr;</span>
-          </a>
+          <Link href="/products">
+            <div onClick={handleSeeProductsClick} className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block cursor-pointer">
+              Pamatyti viską
+              <span aria-hidden="true"> &rarr;</span>
+            </div >
+          </Link>
         </div>
 
         <div className="relative mt-8">
@@ -120,10 +119,10 @@ const Trending: React.FC = () => {
                       <div className="mt-6">
                         {/* <p className="text-sm text-gray-500">{product.color}</p> */}
                         <h3 className="mt-1 font-semibold text-gray-900">
-                          <a href={`/products/${product.slug}`}>
+                          <Link href={`/products/${product.slug}`}>
                             <span className="absolute inset-0" />
                             {product.name}
-                          </a>
+                          </Link>
                         </h3>
                         <p className="mt-1 text-gray-900">{product.price} €</p>
                       </div>
@@ -136,10 +135,12 @@ const Trending: React.FC = () => {
         </div>
 
         <div className="mt-12 px-4 sm:hidden">
-          <a onClick={handleSeeProductsClick} className="text-sm font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer">
-            Pamatyk viską
-            <span aria-hidden="true"> &rarr;</span>
-          </a>
+          <Link href="/products">
+            <div onClick={handleSeeProductsClick} className="text-sm font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer">
+              Pamatyk viską
+              <span aria-hidden="true"> &rarr;</span>
+            </div>
+          </Link>
         </div>
       </div>
     </section>

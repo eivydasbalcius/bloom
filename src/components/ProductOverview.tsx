@@ -4,6 +4,7 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { StarIcon } from '@heroicons/react/20/solid';
 import { sanitizeHtml } from '@/utils/sanitizeHtml';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface MediaItem {
   __typename: string;
@@ -130,9 +131,9 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
         <nav aria-label="Breadcrumb">
           <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
             <li className="text-sm">
-              <a href={product.slug} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
+              <Link href={product.slug} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
                 {product.name}
-              </a>
+              </Link>
             </li>
           </ol>
         </nav>
