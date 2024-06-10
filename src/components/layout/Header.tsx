@@ -146,7 +146,7 @@ const Header: React.FC = () => {
                           <div className="grid grid-cols-1 gap-x-6 gap-y-10">
                             <div>
                               <p id={`mobile-featured-heading-${categoryIdx}`} className="font-medium text-gray-900">
-                                Featured
+                                Kategorijos
                               </p>
                               <ul
                                 role="list"
@@ -382,6 +382,16 @@ const Header: React.FC = () => {
 
                   <div className="flex flex-1 items-center justify-end">
                     <div className="flex items-center lg:ml-8">
+                      {session?.user?.image ? (
+                        <Link href="/order-history">
+                          <button className='text-gray-700 hover:text-gray-800 hover:border-gray-700 relative z-10 -mb-px flex items-center text-sm font-medium transition-colors duration-200 ease-out mr-4 border-solid border-2 border-gray p-1.5 rounded-lg '>
+                            Užsakymų istorija
+                          </button>
+                        </Link>
+                      ) : (
+                        <></>
+                      )}
+
                       <div className="flex space-x-8 items-center">
                         {/* <div className="hidden lg:flex">
                           <Link href="#" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
