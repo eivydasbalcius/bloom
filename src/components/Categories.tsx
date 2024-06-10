@@ -3,6 +3,7 @@ import { Dialog, Disclosure, Menu, Popover, Tab, Transition } from '@headlessui/
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingCartIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const breadcrumbs = [
   { id: 1, name: 'Objects', href: '#' },
@@ -66,13 +67,14 @@ interface AllProductsPageProps {
 const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterOptions>({ categories: [], colors: [], sizes: [] });
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
     categories: [],
     colors: [],
     sizes: []
   });
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
+
+  const [filters, setFilters] = useState<FilterOptions>({ categories: [], colors: [], sizes: [] });
 
   useEffect(() => {
     const categorySet = new Set<string>();
@@ -117,7 +119,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
   useEffect(() => {
     const filtered = products.filter(product => {
       const isVariableProduct = product.__typename === "VariableProduct";
-      if (isVariableProduct) return false; // Exclude VariableProduct
+      if (isVariableProduct) return false;
 
       const categoryMatch = !activeFilters?.categories?.length || product?.productCategories?.nodes?.some(cat => activeFilters.categories.includes(cat.name));
       const colorMatch = !activeFilters?.colors?.length || product?.attributes?.nodes?.some(attr => attr.name === 'pa_color' && attr.terms.nodes.some(term => activeFilters.colors.includes(term.name)));
@@ -126,7 +128,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
       return categoryMatch && colorMatch && sizeMatch;
     });
 
-    console.log('Filtered products:', filtered);
+
     setDisplayedProducts(filtered);
   }, [products, activeFilters]);
 
@@ -264,7 +266,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
             {displayedProducts.map((product) => (
               product.slug !== "light-brown-bag" && (
-                <a key={product.id} href={`/products/${product.slug}`} className="group">
+                <Link key={product.id} href={`/products/${product.slug}`} className="group">
                   <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
                     <Image
                       src={product?.image?.mediaItemUrl}
@@ -276,7 +278,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ products }) => {
                   </div>
                   <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
                   <p className="mt-1 text-lg font-medium text-gray-900">{product.price} €</p>
-                </a>
+                </Link>
               )
             ))}
           </div>

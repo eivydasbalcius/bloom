@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import Image from 'next/image';
 import Swal from 'sweetalert2';
+import Link from 'next/link';
 
 interface CartItem {
   productId: number;
@@ -574,6 +575,7 @@ const Checkout = () => {
                       <div className="flex">
                         <div className="min-w-0 flex-1">
                           <h4 className="text-sm">
+                            
                             <a className="font-medium text-gray-700 hover:text-gray-800">
                               {product.name}
                             </a>

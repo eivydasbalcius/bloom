@@ -3,6 +3,7 @@ import { CheckIcon, ClockIcon, QuestionMarkCircleIcon, XMarkIcon as XMarkIconMin
 import Image from 'next/image';
 import { useProductData } from "../context/ProductDataContext";
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 interface CartItem {
   productId: number;
@@ -168,9 +169,9 @@ export default function ShoppingCart() {
                       <div>
                         <div className="flex justify-between">
                           <h3 className="text-sm">
-                            <a href="#" className="font-medium text-gray-700 hover:text-gray-800">
+                            <Link href="#" className="font-medium text-gray-700 hover:text-gray-800">
                               {product.name}
-                            </a>
+                            </Link>
                           </h3>
                         </div>
                         <div className="mt-1 flex text-sm">
@@ -239,10 +240,10 @@ export default function ShoppingCart() {
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <dt className="flex text-sm text-gray-600">
                   <span>Mokesčiai</span>
-                  <a href="#" className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500">
+                  <Link href="#" className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500">
                     <span className="sr-only">Learn more about how tax is calculated</span>
                     <QuestionMarkCircleIcon className="h-5 w-5" aria-hidden="true" />
-                  </a>
+                  </Link>
                 </dt>
                 <dd className="text-sm font-medium text-gray-900">{taxes} €</dd>
               </div>
@@ -285,10 +286,10 @@ export default function ShoppingCart() {
                 <div className="mt-4 flex justify-between">
                   <div>
                     <h3 className="text-sm text-gray-700">
-                      <a href={`/products/${product.slug}`}>
+                      <Link href={`/products/${product.slug}`}>
                         <span aria-hidden="true" className="absolute inset-0" />
                         {product.name}
-                      </a>
+                      </Link>
                     </h3>
                   </div>
                   <p className="text-sm font-medium text-gray-900">{product.price} €</p>
