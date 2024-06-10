@@ -131,7 +131,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ orders }) => {
                                                 <td className="hidden py-6 pr-8 sm:table-cell">{product?.price}</td>
                                                 <td className="hidden py-6 pr-8 sm:table-cell">{order.status}</td>
                                                 <td className="whitespace-nowrap py-6 text-right font-medium">
-                                                    <a onClick={() => handleViewProduct(product?.productId)} className="text-indigo-600">
+                                                    <a onClick={() => handleViewProduct(product?.productId)} className="text-indigo-600 cursor-pointer">
                                                         Peržiūrėti<span className="hidden lg:inline"> prekę</span>
                                                         <span className="sr-only">, {product?.name}</span>
                                                     </a>
